@@ -30,3 +30,5 @@ impl<T> std::ops::IndexMut<Direction> for [T; 2] {
 }
 
 pub const NULL_INDEX: usize = usize::MAX;
+
+pub const ZERO: f64 = 0.0;

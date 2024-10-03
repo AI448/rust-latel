@@ -2,7 +2,9 @@ use crate::impls::{MappedVector, PermutatedPermutator, PermutatedVector, RowPerm
 use crate::traits::{
     ColumnMatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait,
 };
-use crate::wrappers::{ColumnMatrix, Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector};
+use crate::wrappers::{
+    BidirectionalMatrix, ColumnMatrix, Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector,
+};
 use std::ops::{Div, Mul, Neg};
 
 macro_rules! impl_nonscalar_unary_operation {
@@ -109,32 +111,32 @@ macro_rules! impl_nonscalar_nonscalar_binary_operation {
     (
         $op_trait: ident, $op_func: ident,
         $lhs_wrapper: ident, $lhs_trait: ident,
-        $rhs_wrapper: ident, $rhs_trait: ident,
+        $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*, // NOTE: この書き方しかできたいというのは中々に耐え難い
         $result_wrapper: ident, $result_trait: ident,
         $closure: expr
     ) => {
-        impl<L: $lhs_trait, R: $rhs_trait> $op_trait<$rhs_wrapper<R>> for $lhs_wrapper<L> {
+        impl<L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<$rhs_wrapper<R>> for $lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: $rhs_wrapper<R>) -> Self::Output {
                 $result_wrapper { object: $closure(self.object, rhs.object) }
             }
         }
-        impl<L: $lhs_trait, R: $rhs_trait> $op_trait<$rhs_wrapper<R>> for &$lhs_wrapper<L> {
+        impl<L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<$rhs_wrapper<R>> for &$lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: $rhs_wrapper<R>) -> Self::Output {
                 $result_wrapper { object: $closure(&self.object, rhs.object) }
             }
         }
-        impl<'a, L: $lhs_trait, R: $rhs_trait> $op_trait<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
+        impl<'a, L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: &'a $rhs_wrapper<R>) -> Self::Output {
                 $result_wrapper { object: $closure(self.object, &rhs.object) }
             }
         }
-        impl<'a, L: $lhs_trait, R: $rhs_trait> $op_trait<&'a $rhs_wrapper<R>> for &$lhs_wrapper<L> {
+        impl<'a, L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<&'a $rhs_wrapper<R>> for &$lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: &'a $rhs_wrapper<R>) -> Self::Output {
@@ -344,6 +346,19 @@ impl_nonscalar_nonscalar_binary_operation!(
     PermutatorTrait,
     ColumnMatrix,
     ColumnMatrixTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait,
+    |permutator, matrix| RowPermutatedMatrix::new(permutator, matrix)
+);
+
+// Permutator * BidirectionalMatrix -> SequentialMatrix
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    Permutator,
+    PermutatorTrait,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait,
     SequentialMatrix,
     SequentialMatrixTrait,
     |permutator, matrix| RowPermutatedMatrix::new(permutator, matrix)

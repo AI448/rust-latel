@@ -17,5 +17,5 @@ pub use traits::{
 pub use types::Direction;
 pub use wrappers::{
     ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, Permutator, RandomVector, RowMatrix,
-    SequentialMatrix, SequentialVector, SparseVector,
+    SequentialMatrix, SequentialVector, SparseMatrix, SparseVector,
 };

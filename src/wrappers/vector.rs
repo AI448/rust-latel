@@ -1,20 +1,5 @@
 use crate::{impls, RandomVectorTrait, SequentialVectorTrait};
 
-fn debug_vector(f: &mut std::fmt::Formatter, vector: &impl SequentialVectorTrait) -> std::fmt::Result {
-    write!(f, "{{ dimension = {}, values = [", vector.dimension())?;
-    let mut first = true;
-    for (index, value) in vector.iter() {
-        if first {
-            first = false;
-        } else {
-            write!(f, ", ")?;
-        }
-        write!(f, "({}, {})", index, value)?;
-    }
-    write!(f, "] }}")?;
-    return Ok(());
-}
-
 #[derive(Default, Clone)]
 pub struct SequentialVector<V: SequentialVectorTrait> {
     pub(crate) object: V,
@@ -87,4 +72,19 @@ impl CompressedVector {
     pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         Self { object: impls::CompressedVector::new(dimension, nonzero_elements) }
     }
+}
+
+fn debug_vector(f: &mut std::fmt::Formatter, vector: &impl SequentialVectorTrait) -> std::fmt::Result {
+    write!(f, "{{ dimension = {}, values = [", vector.dimension())?;
+    let mut first = true;
+    for (index, value) in vector.iter() {
+        if first {
+            first = false;
+        } else {
+            write!(f, ", ")?;
+        }
+        write!(f, "({}, {})", index, value)?;
+    }
+    write!(f, "] }}")?;
+    return Ok(());
 }
