@@ -1,4 +1,4 @@
-use crate::impls::{MappedVector, PermutatedPermutator, PermutatedVector, RowPermutatedMatrix};
+use crate::impls::{ColumnPermutatedMatrix, MappedVector, PermutatedPermutator, PermutatedVector, RowPermutatedMatrix};
 use crate::traits::{
     ColumnMatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait,
 };
@@ -110,33 +110,33 @@ macro_rules! impl_nonscalar_scalar_binary_operation {
 macro_rules! impl_nonscalar_nonscalar_binary_operation {
     (
         $op_trait: ident, $op_func: ident,
-        $lhs_wrapper: ident, $lhs_trait: ident,
-        $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*, // NOTE: この書き方しかできたいというのは中々に耐え難い
+        $lhs_wrapper: ident, $lhs_trait1: ident $(+ $lhs_trait2: ident)*, // NOTE: この書き方しかできたいというのは中々に耐え難い
+        $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*, // 耐え難い...
         $result_wrapper: ident, $result_trait: ident,
         $closure: expr
     ) => {
-        impl<L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<$rhs_wrapper<R>> for $lhs_wrapper<L> {
+        impl<L: $lhs_trait1 $(+ $lhs_trait2)*, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<$rhs_wrapper<R>> for $lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: $rhs_wrapper<R>) -> Self::Output {
                 $result_wrapper { object: $closure(self.object, rhs.object) }
             }
         }
-        impl<L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<$rhs_wrapper<R>> for &$lhs_wrapper<L> {
+        impl<L: $lhs_trait1 $(+ $lhs_trait2)*, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<$rhs_wrapper<R>> for &$lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: $rhs_wrapper<R>) -> Self::Output {
                 $result_wrapper { object: $closure(&self.object, rhs.object) }
             }
         }
-        impl<'a, L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
+        impl<'a, L: $lhs_trait1 $(+ $lhs_trait2)*, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: &'a $rhs_wrapper<R>) -> Self::Output {
                 $result_wrapper { object: $closure(self.object, &rhs.object) }
             }
         }
-        impl<'a, L: $lhs_trait, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<&'a $rhs_wrapper<R>> for &$lhs_wrapper<L> {
+        impl<'a, L: $lhs_trait1 $(+ $lhs_trait2)*, R: $rhs_trait1 $(+ $rhs_trait2)*> $op_trait<&'a $rhs_wrapper<R>> for &$lhs_wrapper<L> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
             fn $op_func(self, rhs: &'a $rhs_wrapper<R>) -> Self::Output {
@@ -362,4 +362,56 @@ impl_nonscalar_nonscalar_binary_operation!(
     SequentialMatrix,
     SequentialMatrixTrait,
     |permutator, matrix| RowPermutatedMatrix::new(permutator, matrix)
+);
+
+// SequentialMatrix * Permutator -> SequentialMatrix
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    SequentialMatrix,
+    SequentialMatrixTrait,
+    Permutator,
+    PermutatorTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait,
+    |matrix, permutator| ColumnPermutatedMatrix::new(matrix, permutator)
+);
+
+// RowMatrix * Permutator -> SequentialMatrix
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    RowMatrix,
+    RowMatrixTrait,
+    Permutator,
+    PermutatorTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait,
+    |matrix, permutator| ColumnPermutatedMatrix::new(matrix, permutator)
+);
+
+// ColumnMatrix * Permutator -> SequentialMatrix
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    ColumnMatrix,
+    ColumnMatrixTrait,
+    Permutator,
+    PermutatorTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait,
+    |matrix, permutator| ColumnPermutatedMatrix::new(matrix, permutator)
+);
+
+// BidirectionalMatrix * Permutator -> SequentialMatrix
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait,
+    Permutator,
+    PermutatorTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait,
+    |matrix, permutator| ColumnPermutatedMatrix::new(matrix, permutator)
 );

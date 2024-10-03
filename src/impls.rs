@@ -19,7 +19,7 @@ pub(crate) use crs_matrix::CRSMatrix;
 pub(crate) use dense_vector::DenseVector;
 pub(crate) use full_permutator::FullPermutator;
 pub(crate) use mapped_vector::MappedVector;
-pub(crate) use permutated_matrix::RowPermutatedMatrix;
+pub(crate) use permutated_matrix::{ColumnPermutatedMatrix, RowPermutatedMatrix};
 pub(crate) use permutated_permutator::PermutatedPermutator;
 pub(crate) use permutated_vector::PermutatedVector;
 pub(crate) use sparse_matrix::SparseMatrix;

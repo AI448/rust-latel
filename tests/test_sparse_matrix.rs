@@ -14,6 +14,8 @@ fn test() {
         // 置換行列を掛けてみる
         let y = &p * &x;
         dbg!(&y);
+        let z = &x * &p;
+        dbg!(&z);
     }
     // 行を 0 クリア
     x.clear_row(1);
