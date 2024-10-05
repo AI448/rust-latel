@@ -7,17 +7,20 @@ fn test() {
     x[[0, 0]] = 0.0;
     x[[1, 2]] = 1.2;
     dbg!(&x);
-
     {
         let mut p = FullPermutator::new([3, 3]);
         p.set(0, 1);
         // 置換行列を掛けてみる
         let y = &p * &x;
         dbg!(&y);
+        // 右から掛けてみる
         let z = &x * &p;
         dbg!(&z);
     }
     // 行を 0 クリア
     x.clear_row(1);
+    dbg!(&x);
+    // 要素を削除
+    x.remove([0, 0]);
     dbg!(&x);
 }

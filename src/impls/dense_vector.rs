@@ -1,4 +1,6 @@
-use crate::traits::{RandomVectorTrait, SequentialVectorTrait, VectorTrait};
+use crate::traits::{
+    RandomMutVectorTrait, RandomVectorTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait,
+};
 
 #[derive(Default, Clone, Debug)]
 pub struct DenseVector {
@@ -12,22 +14,8 @@ impl DenseVector {
         return v;
     }
 
-    pub fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, items: I) {
-        if dimension < self.values.len() {
-            self.values.truncate(dimension);
-            self.values.fill(0.0);
-        } else {
-            self.values.fill(0.0);
-            self.values.extend(std::iter::repeat(0.0).take(dimension - self.values.len()));
-        }
-        for (i, x) in items {
-            debug_assert!(i < self.dimension());
-            self.values[i] = x;
-        }
-    }
-
     /// 全ての要素を 0 にする
-    pub fn clear(&mut self) {
+    pub fn zero_clear(&mut self) {
         self.values.fill(0.0);
     }
 }
@@ -63,20 +51,20 @@ impl RandomVectorTrait for DenseVector {
     }
 }
 
-impl<V: SequentialVectorTrait> std::ops::AddAssign<V> for DenseVector {
-    fn add_assign(&mut self, rhs: V) {
-        assert!(self.dimension() == rhs.dimension());
-        for (i, x) in rhs.iter() {
-            self.values[i] += x;
+impl SequentialMutVectorTrait for DenseVector {
+    fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
+        if dimension < self.values.len() {
+            self.values.truncate(dimension);
+            self.values.fill(0.0);
+        } else {
+            self.values.fill(0.0);
+            self.values.extend(std::iter::repeat(0.0).take(dimension - self.values.len()));
+        }
+        for (i, x) in nonzero_elements {
+            debug_assert!(i < self.dimension());
+            self.values[i] = x;
         }
     }
 }
 
-impl<V: SequentialVectorTrait> std::ops::SubAssign<V> for DenseVector {
-    fn sub_assign(&mut self, rhs: V) {
-        assert!(self.dimension() == rhs.dimension());
-        for (i, x) in rhs.iter() {
-            self.values[i] -= x;
-        }
-    }
-}
+impl RandomMutVectorTrait for DenseVector {}

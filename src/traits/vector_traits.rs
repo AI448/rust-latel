@@ -22,6 +22,20 @@ pub trait RandomVectorTrait: SequentialVectorTrait {
     fn get(&self, i: usize) -> f64;
 }
 
+/// 代入可能なベクトル
+pub trait SequentialMutVectorTrait: SequentialVectorTrait {
+    fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I);
+}
+
+/// ランダムアクセスによる変更が可能なベクトル
+pub trait RandomMutVectorTrait:
+    RandomVectorTrait
+    + SequentialMutVectorTrait
+    + std::ops::Index<usize, Output = f64>
+    + std::ops::IndexMut<usize, Output = f64>
+{
+}
+
 // VectorTrait への参照も VectorTrait とする
 
 impl<V: VectorTrait> VectorTrait for &V {

@@ -1,4 +1,4 @@
-use latel::SparseVector;
+use latel::{SequentialVectorTrait, SparseVector};
 
 #[test]
 fn test() {
@@ -17,4 +17,11 @@ fn test() {
     // 内積をとってみたり
     let n = &x * &z;
     dbg!(n);
+    // クローンして
+    let mut x = x.clone();
+    dbg!(&x);
+    // 足してみたり
+    x += &z;
+    dbg!(&x);
+    assert!(x.norm() <= 1e-10);
 }

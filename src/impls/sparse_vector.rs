@@ -1,4 +1,8 @@
-use super::super::traits::{RandomVectorTrait, SequentialVectorTrait, VectorTrait};
+// use crate::traits::AssignableVectorTrait;
+
+use crate::traits::{
+    RandomMutVectorTrait, RandomVectorTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait,
+};
 
 #[derive(Default, Clone, Debug)]
 pub struct SparseVector {
@@ -9,17 +13,9 @@ pub struct SparseVector {
 
 impl SparseVector {
     pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-        let mut values = Vec::from_iter(std::iter::repeat(0f64).take(dimension));
-        let mut flags = Vec::from_iter(std::iter::repeat(false).take(dimension));
-        let mut nonzero_indices = Vec::default();
-        for (i, x) in nonzero_elements {
-            if x != 0.0 {
-                values[i] = x;
-                flags[i] = true;
-                nonzero_indices.push(i);
-            }
-        }
-        Self { values: values, flags: flags, nonzero_indices: nonzero_indices }
+        let mut v = Self::default();
+        v.replace(dimension, nonzero_elements);
+        return v;
     }
 
     pub fn zero_clear(&mut self) {
@@ -28,68 +24,6 @@ impl SparseVector {
             self.values[i] = 0.0;
             self.flags[i] = false;
         }
-    }
-
-    // pub fn redimension(&mut self, new_dimension: usize) {
-    //     debug_assert!(self.values.len() == self.positions.len());
-    //     if new_dimension < self.positions.len() {
-    //         while self.positions.len() > new_dimension {
-    //             self.values.pop();
-    //             let position = unsafe { self.positions.pop().unwrap_unchecked() };
-    //             if position != Self::NULL_POSITION {
-    //                 debug_assert!(!self.nonzero_indices.is_empty());
-    //                 debug_assert!(self.nonzero_indices[position] == self.positions.len());
-    //                 self.nonzero_indices.swap_remove(position);
-    //                 if position < self.nonzero_indices.len() {
-    //                     let i = self.nonzero_indices[position];
-    //                     debug_assert!(self.positions[i] == self.nonzero_indices.len());
-    //                     self.positions[i] = position;
-    //                 }
-    //             }
-    //         }
-    //     } else if new_dimension > self.positions.len() {
-    //         self.values.resize(new_dimension, 0f64);
-    //         self.positions.resize(new_dimension, Self::NULL_POSITION);
-    //     }
-    // }
-
-    // pub fn insert(&mut self, index: u32, value: f64) {
-    //     self.values[index] = value;
-    //     if self.positions[index] == Self::NULL_POSITION {
-    //         self.positions[index] = self.nonzero_indices.len();
-    //         self.nonzero_indices.push(index);
-    //     }
-    // }
-
-    // pub fn zero_clear(&mut self) {
-    //     while let Some(i) = self.nonzero_indices.pop() {
-    //         self.values[i] = 0.0;
-    //         self.positions[i] = Self::NULL_POSITION;
-    //     }
-    //     debug_assert!(self.values.len() == self.positions.len());
-    //     debug_assert!(self.nonzero_indices.is_empty());
-    // }
-
-    // pub fn iter_mut(&mut self) -> impl Iterator<Item=(u32, &mut f64)> + '_ {
-    //     self.nonzero_indices.iter().map(|i| (*i, &mut self.values[*i]))
-    // }
-}
-
-impl std::ops::Index<usize> for SparseVector {
-    type Output = f64;
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.values[index]
-    }
-}
-
-impl std::ops::IndexMut<usize> for SparseVector {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if !self.flags[index] {
-            debug_assert!(self.values[index] == 0.0);
-            self.flags[index] = true;
-            self.nonzero_indices.push(index);
-        }
-        &mut self.values[index]
     }
 }
 
@@ -110,3 +44,38 @@ impl RandomVectorTrait for SparseVector {
         self.values[i]
     }
 }
+
+impl SequentialMutVectorTrait for SparseVector {
+    fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
+        self.zero_clear();
+        self.values.resize(dimension, 0.0);
+        self.flags.resize(dimension, false);
+        for (i, x) in nonzero_elements {
+            if x != 0.0 {
+                self.values[i] = x;
+                self.flags[i] = true;
+                self.nonzero_indices.push(i);
+            }
+        }
+    }
+}
+
+impl std::ops::Index<usize> for SparseVector {
+    type Output = f64;
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.values[index]
+    }
+}
+
+impl std::ops::IndexMut<usize> for SparseVector {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if !self.flags[index] {
+            debug_assert!(self.values[index] == 0.0);
+            self.flags[index] = true;
+            self.nonzero_indices.push(index);
+        }
+        &mut self.values[index]
+    }
+}
+
+impl RandomMutVectorTrait for SparseVector {}

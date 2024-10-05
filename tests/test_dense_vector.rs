@@ -26,6 +26,9 @@ fn test() {
     a -= &z;
     dbg!(&a);
     // クリアしてみたり
-    a.clear();
+    a.zero_clear();
     dbg!(&a);
+    // // 代入してみたり
+    // a <<= &x;
+    // dbg!(&a);
 }
