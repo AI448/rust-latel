@@ -55,6 +55,18 @@ impl SparseMatrix {
         return matrix;
     }
 
+    pub fn replace<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
+        for d in [ROW, COLUMN] {
+            self.headers[d].clear();
+            self.headers[d].resize_with(dimension[d], || Header::default());
+        }
+        self.hash_map.clear();
+
+        for (ij, x) in nonzero_elements {
+            self[ij] = x;
+        }
+    }
+
     pub fn remove(&mut self, ij: [usize; 2]) {
         if let Some(item) = self.hash_map.remove(&ij) {
             let pointer = item.get();
@@ -133,6 +145,8 @@ impl std::ops::Index<[usize; 2]> for SparseMatrix {
 
 impl std::ops::IndexMut<[usize; 2]> for SparseMatrix {
     fn index_mut(&mut self, index: [usize; 2]) -> &mut Self::Output {
+        debug_assert!(index[ROW] < self.headers[ROW].len());
+        debug_assert!(index[COLUMN] < self.headers[COLUMN].len());
         let item = self.hash_map.entry(index).or_insert_with(|| {
             let item = Box::new(UnsafeCell::new(Item {
                 links: [ROW, COLUMN].map(|d| Link { previous: self.headers[d][index[d]].last.clone(), next: None }),
