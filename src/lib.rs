@@ -14,8 +14,8 @@ pub use traits::{
     ColumnMatrixTrait, MatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
     SequentialVectorTrait, VectorTrait,
 };
-pub use types::Direction;
+pub use types::Direction::{self, COLUMN, ROW};
 pub use wrappers::{
     ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, Permutator, RandomVector, RowMatrix,
-    SequentialMatrix, SequentialVector, SparseMatrix, SparseVector,
+    SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, CRSMatrix
 };

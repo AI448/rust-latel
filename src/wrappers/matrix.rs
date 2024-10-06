@@ -1,5 +1,6 @@
 use crate::types::Direction::{COLUMN, ROW};
-use crate::{impls, ColumnMatrixTrait, RowMatrixTrait, SequentialMatrixTrait};
+use crate::{impls, ColumnMatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait};
+use crate::wrappers::SequentialVector;
 
 #[derive(Default, Clone)]
 pub struct SequentialMatrix<M: SequentialMatrixTrait> {
@@ -56,6 +57,11 @@ impl<M: RowMatrixTrait> std::ops::DerefMut for RowMatrix<M> {
 }
 
 impl<M: RowMatrixTrait> RowMatrix<M> {
+
+    pub fn row(&self, i: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
+        SequentialVector{object: self.object.row(i)}
+    }
+
     #[allow(non_snake_case)]
     pub fn T(&self) -> ColumnMatrix<impl ColumnMatrixTrait + '_> {
         ColumnMatrix { object: impls::TransposedMatrix::new(&self.object) }
@@ -92,6 +98,11 @@ impl<M: ColumnMatrixTrait> std::ops::DerefMut for ColumnMatrix<M> {
 }
 
 impl<M: ColumnMatrixTrait> ColumnMatrix<M> {
+
+    pub fn column(&self, j: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
+        SequentialVector{object: self.object.column(j)}
+    }
+
     #[allow(non_snake_case)]
     pub fn T(&self) -> RowMatrix<impl RowMatrixTrait + '_> {
         RowMatrix { object: impls::TransposedMatrix::new(&self.object) }

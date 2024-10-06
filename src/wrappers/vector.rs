@@ -1,8 +1,20 @@
-use crate::{impls, RandomVectorTrait, SequentialVectorTrait};
+use crate::{impls, RandomVectorTrait, SequentialVectorTrait, VectorTrait};
 
 #[derive(Default, Clone)]
 pub struct SequentialVector<V: SequentialVectorTrait> {
     pub(crate) object: V,
+}
+
+impl<V: SequentialVectorTrait> VectorTrait for SequentialVector<V> {
+    fn dimension(&self) -> usize {
+        self.object.dimension()
+    }
+}
+
+impl<V: SequentialVectorTrait> SequentialVectorTrait for SequentialVector<V> {
+    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+        self.object.iter()
+    }
 }
 
 impl<V: SequentialVectorTrait> std::ops::Deref for SequentialVector<V> {
@@ -27,6 +39,24 @@ impl<V: SequentialVectorTrait> std::fmt::Debug for SequentialVector<V> {
 #[derive(Default, Clone)]
 pub struct RandomVector<V: RandomVectorTrait> {
     pub(crate) object: V,
+}
+
+impl<V: RandomVectorTrait> VectorTrait for RandomVector<V> {
+    fn dimension(&self) -> usize {
+        self.object.dimension()
+    }
+}
+
+impl<V: RandomVectorTrait> SequentialVectorTrait for RandomVector<V> {
+    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+        self.object.iter()
+    }
+}
+
+impl<V: RandomVectorTrait> RandomVectorTrait for RandomVector<V> {
+    fn get(&self, i: usize) -> f64 {
+        self.object.get(i)
+    }
 }
 
 impl<V: RandomVectorTrait> std::ops::Deref for RandomVector<V> {
