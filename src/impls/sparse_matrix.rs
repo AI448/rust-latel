@@ -106,23 +106,29 @@ impl SparseMatrix {
     pub fn clear_row(&mut self, i: usize) {
         while self.headers[ROW][i].len != 0 {
             let index = {
-                let pointer = self.headers[ROW][i].first.unwrap();
+                let pointer = self.headers[ROW][i].last.unwrap();
                 unsafe { &*pointer.as_ptr() }.indices
             };
             debug_assert!(index[ROW] == i);
             self.remove(index);
         }
+        debug_assert!(self.headers[ROW][i].first == None);
+        debug_assert!(self.headers[ROW][i].last == None);
+        debug_assert!(self.headers[ROW][i].len == 0);
     }
 
     pub fn clear_column(&mut self, j: usize) {
         while self.headers[COLUMN][j].len != 0 {
             let index = {
-                let pointer = self.headers[COLUMN][j].first.unwrap();
+                let pointer = self.headers[COLUMN][j].last.unwrap();
                 unsafe { &*pointer.as_ptr() }.indices
             };
             debug_assert!(index[COLUMN] == j);
             self.remove(index);
         }
+        debug_assert!(self.headers[COLUMN][j].first == None);
+        debug_assert!(self.headers[COLUMN][j].last == None);
+        debug_assert!(self.headers[COLUMN][j].len == 0);
     }
 
     pub fn zero_clear(&mut self) {
@@ -218,11 +224,12 @@ impl<'a, const D: Direction> std::iter::Iterator for Iter<'a, D> {
     fn next(&mut self) -> Option<Self::Item> {
         self.current = match self.current {
             None => self.sparse_matrix.headers[D][self.index].first,
-            Some(current) => unsafe { &*current.as_ptr() }.links[!D].next,
+            Some(current) => unsafe { &*current.as_ptr() }.links[D].next,
         };
         return self.current.as_ref().map(|&current| {
             let item = unsafe { &*current.as_ptr() };
-            (item.indices[D], item.value)
+            debug_assert!(item.indices[D] == self.index);
+            (item.indices[!D], item.value)
         });
     }
 

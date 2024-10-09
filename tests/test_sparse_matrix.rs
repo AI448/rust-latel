@@ -5,7 +5,9 @@ fn test() {
     let mut x = SparseMatrix::new([3, 3], [([0, 0], 1.0), ([1, 1], 1.1), ([2, 2], 2.2)].into_iter());
     dbg!(&x);
     x[[0, 0]] = 0.0;
+    dbg!(&x[[0, 0]]);
     x[[1, 2]] = 1.2;
+    dbg!(&x[[1, 2]]);
     dbg!(&x);
     {
         let mut p = FullPermutator::new([3, 3]);

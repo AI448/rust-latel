@@ -139,6 +139,15 @@ impl<M: RowMatrixTrait + ColumnMatrixTrait> std::ops::DerefMut for Bidirectional
 }
 
 impl<M: RowMatrixTrait + ColumnMatrixTrait> BidirectionalMatrix<M> {
+
+    pub fn row(&self, i: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
+        SequentialVector{object: self.object.row(i)}
+    }
+
+    pub fn column(&self, j: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
+        SequentialVector{object: self.object.column(j)}
+    }
+
     #[allow(non_snake_case)]
     pub fn T(&self) -> BidirectionalMatrix<impl RowMatrixTrait + ColumnMatrixTrait + '_> {
         BidirectionalMatrix { object: impls::TransposedMatrix::new(&self.object) }
@@ -162,6 +171,7 @@ impl CompressedMatrix {
     pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
         Self { object: impls::CompressedMatrix::new(dimension, nonzero_elements) }
     }
+
 }
 
 pub type CRSMatrix = RowMatrix<impls::CRSMatrix>;
