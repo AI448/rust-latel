@@ -16,6 +16,33 @@ pub use traits::{
 };
 pub use types::Direction::{self, COLUMN, ROW};
 pub use wrappers::{
-    ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, Permutator, RandomVector, RowMatrix,
-    SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, CRSMatrix
+    CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, LazyVector, Permutator,
+    RandomVector, RowMatrix, SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, UnitVector,
 };
+
+pub trait FMax: Iterator<Item = f64> + Sized {
+    fn fmax(self) -> f64 {
+        let mut x = -f64::INFINITY;
+        for y in self {
+            if y.is_nan() {
+                return f64::NAN;
+            } else {
+                x = x.max(y);
+            }
+        }
+        return x;
+    }
+    fn fmin(self) -> f64 {
+        let mut x = f64::INFINITY;
+        for y in self {
+            if y.is_nan() {
+                return f64::NAN;
+            } else {
+                x = x.min(y);
+            }
+        }
+        return x;
+    }
+}
+
+impl<I: Iterator<Item = f64>> FMax for I {}

@@ -6,6 +6,10 @@ pub trait VectorTrait {
 
 // NOTE: into_iter(self) が可能なベクトルがあってもいいのかも
 
+pub trait LazyVectorTrait: VectorTrait {
+    fn add_assign_to(&self, vector: &mut impl RandomMutVectorTrait);
+}
+
 /// シーケンシャルアクセス可能なベクトル
 pub trait SequentialVectorTrait: VectorTrait {
     /// 非ゼロ要素の添字と値の組のイテレータ
@@ -15,6 +19,10 @@ pub trait SequentialVectorTrait: VectorTrait {
         // NOTE: 後で考える fma を使ったほうが高精度だったりするのだろうか
         self.iter().map(|(_, x)| x.powi(2)).sum::<f64>().sqrt()
     }
+    // TODO: 後で検討
+    // fn add_assign_to(&self, lhs: &mut RandomMutVectorTrait)
+    // のような関数を定義して，実装を右辺値に応じて切り替えることができる
+    // それによって，右辺値が スカラー×ベクトル であれば fma 命令を使うなどの特殊化っぽいことができるようになる
 }
 
 /// ランダムアクセス可能なベクトル

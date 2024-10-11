@@ -1,6 +1,6 @@
 use crate::types::Direction::{COLUMN, ROW};
-use crate::{impls, ColumnMatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait};
 use crate::wrappers::SequentialVector;
+use crate::{impls, ColumnMatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait};
 
 #[derive(Default, Clone)]
 pub struct SequentialMatrix<M: SequentialMatrixTrait> {
@@ -57,9 +57,8 @@ impl<M: RowMatrixTrait> std::ops::DerefMut for RowMatrix<M> {
 }
 
 impl<M: RowMatrixTrait> RowMatrix<M> {
-
     pub fn row(&self, i: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector{object: self.object.row(i)}
+        SequentialVector { object: self.object.row(i) }
     }
 
     #[allow(non_snake_case)]
@@ -98,9 +97,8 @@ impl<M: ColumnMatrixTrait> std::ops::DerefMut for ColumnMatrix<M> {
 }
 
 impl<M: ColumnMatrixTrait> ColumnMatrix<M> {
-
     pub fn column(&self, j: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector{object: self.object.column(j)}
+        SequentialVector { object: self.object.column(j) }
     }
 
     #[allow(non_snake_case)]
@@ -139,13 +137,12 @@ impl<M: RowMatrixTrait + ColumnMatrixTrait> std::ops::DerefMut for Bidirectional
 }
 
 impl<M: RowMatrixTrait + ColumnMatrixTrait> BidirectionalMatrix<M> {
-
     pub fn row(&self, i: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector{object: self.object.row(i)}
+        SequentialVector { object: self.object.row(i) }
     }
 
     pub fn column(&self, j: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector{object: self.object.column(j)}
+        SequentialVector { object: self.object.column(j) }
     }
 
     #[allow(non_snake_case)]
@@ -171,7 +168,6 @@ impl CompressedMatrix {
     pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
         Self { object: impls::CompressedMatrix::new(dimension, nonzero_elements) }
     }
-
 }
 
 pub type CRSMatrix = RowMatrix<impls::CRSMatrix>;
@@ -179,6 +175,14 @@ pub type CRSMatrix = RowMatrix<impls::CRSMatrix>;
 impl CRSMatrix {
     pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
         Self { object: impls::CRSMatrix::new(dimension, nonzero_elements) }
+    }
+}
+
+pub type CCSMatrix = ColumnMatrix<impls::CCSMatrix>;
+
+impl CCSMatrix {
+    pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
+        Self { object: impls::CCSMatrix::new(dimension, nonzero_elements) }
     }
 }
 

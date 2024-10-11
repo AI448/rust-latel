@@ -1,4 +1,22 @@
-use crate::{impls, RandomVectorTrait, SequentialVectorTrait, VectorTrait};
+use crate::{impls, traits::LazyVectorTrait, RandomVectorTrait, SequentialVectorTrait, VectorTrait};
+
+#[derive(Default, Clone)]
+pub struct LazyVector<V: LazyVectorTrait> {
+    pub(crate) object: V,
+}
+
+impl<V: LazyVectorTrait> std::ops::Deref for LazyVector<V> {
+    type Target = V;
+    fn deref(&self) -> &Self::Target {
+        &self.object
+    }
+}
+
+impl<V: LazyVectorTrait> std::ops::DerefMut for LazyVector<V> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.object
+    }
+}
 
 #[derive(Default, Clone)]
 pub struct SequentialVector<V: SequentialVectorTrait> {
@@ -87,6 +105,7 @@ impl DenseVector {
     }
 }
 
+/// 非ゼロ要素の位置を保持する疎ベクトル
 pub type SparseVector = RandomVector<impls::SparseVector>;
 
 impl SparseVector {
@@ -101,6 +120,15 @@ pub type CompressedVector = SequentialVector<impls::CompressedVector>;
 impl CompressedVector {
     pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         Self { object: impls::CompressedVector::new(dimension, nonzero_elements) }
+    }
+}
+
+/// 単位ベクトル
+pub type UnitVector = RandomVector<impls::UnitVector>;
+
+impl UnitVector {
+    pub fn new(dimension: usize, nonzero_index: usize) -> Self {
+        Self { object: impls::UnitVector::new(dimension, nonzero_index) }
     }
 }
 

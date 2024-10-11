@@ -1,11 +1,15 @@
-use crate::impls::{ColumnPermutatedMatrix, MappedVector, PermutatedPermutator, PermutatedVector, RowPermutatedMatrix};
+use crate::impls::{
+    ColumnMatrixMultipliedVector, ColumnPermutatedMatrix, MappedVector, PermutatedPermutator, PermutatedVector,
+    RowPermutatedMatrix,
+};
 use crate::traits::{
-    ColumnMatrixTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
-    SequentialMutVectorTrait, SequentialVectorTrait,
+    ColumnMatrixTrait, LazyVectorTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait,
+    SequentialMatrixTrait, SequentialVectorTrait,
 };
 use crate::wrappers::{
     BidirectionalMatrix, ColumnMatrix, Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector,
 };
+use crate::LazyVector;
 use std::ops::{Div, Mul, Neg};
 
 macro_rules! impl_nonscalar_unary_operation {
@@ -417,6 +421,30 @@ impl_nonscalar_nonscalar_binary_operation!(
     |matrix, permutator| ColumnPermutatedMatrix::new(matrix, permutator)
 );
 
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    ColumnMatrix,
+    ColumnMatrixTrait,
+    SequentialVector,
+    SequentialVectorTrait,
+    LazyVector,
+    LazyVectorTrait,
+    |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
+);
+
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    ColumnMatrix,
+    ColumnMatrixTrait,
+    RandomVector,
+    RandomVectorTrait,
+    LazyVector,
+    LazyVectorTrait,
+    |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
+);
+
 // macro_rules! impl_vector_assignment {
 //     (
 //         $lhs_wrapper: ident, $lhs_trait1: ident $(+ $lhs_trait2: ident)*,
@@ -502,3 +530,9 @@ macro_rules! impl_add_assign {
 impl_add_assign!(RandomVector, RandomMutVectorTrait, SequentialVector, SequentialVectorTrait);
 
 impl_add_assign!(RandomVector, RandomMutVectorTrait, RandomVector, RandomVectorTrait);
+
+impl<L: RandomMutVectorTrait, R: LazyVectorTrait> std::ops::AddAssign<LazyVector<R>> for RandomVector<L> {
+    fn add_assign(&mut self, rhs: LazyVector<R>) {
+        rhs.object.add_assign_to(&mut self.object);
+    }
+}
