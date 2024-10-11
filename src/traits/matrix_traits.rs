@@ -1,8 +1,7 @@
 use super::SequentialVectorTrait;
-use crate::types::Direction;
 
 pub trait MatrixTrait {
-    fn dimension<const D: Direction>(&self) -> usize;
+    fn dimension(&self) -> [usize; 2];
 }
 
 // NOTE: ベクトル同様に into_iter(self) が可能な行列があってもいいのかも
@@ -20,8 +19,8 @@ pub trait ColumnMatrixTrait: SequentialMatrixTrait {
 }
 
 impl<M: MatrixTrait> MatrixTrait for &M {
-    fn dimension<const D: Direction>(&self) -> usize {
-        (*self).dimension::<{ D }>()
+    fn dimension(&self) -> [usize; 2] {
+        (*self).dimension()
     }
 }
 

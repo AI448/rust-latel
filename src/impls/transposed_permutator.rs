@@ -1,5 +1,5 @@
 use crate::traits::PermutatorTrait;
-use crate::types::Direction::{self, COLUMN, ROW};
+use crate::types::Transposed;
 
 #[derive(Debug)]
 pub struct TransposedPermutator<P: PermutatorTrait> {
@@ -13,17 +13,17 @@ impl<P: PermutatorTrait> TransposedPermutator<P> {
 }
 
 impl<P: PermutatorTrait> PermutatorTrait for TransposedPermutator<P> {
-    fn dimension<const D: Direction>(&self) -> usize {
-        match D {
-            ROW => self.permutator.dimension::<{ COLUMN }>(),
-            COLUMN => self.permutator.dimension::<{ ROW }>(),
-        }
+    #[inline(always)]
+    fn dimension(&self) -> [usize; 2] {
+        self.permutator.dimension().transposed()
     }
 
+    #[inline(always)]
     fn permutate(&self, i: usize) -> Option<usize> {
         self.permutator.unpermutate(i)
     }
 
+    #[inline(always)]
     fn unpermutate(&self, i: usize) -> Option<usize> {
         self.permutator.permutate(i)
     }

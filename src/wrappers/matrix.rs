@@ -195,12 +195,7 @@ impl SparseMatrix {
 }
 
 fn debug_vector(f: &mut std::fmt::Formatter, matrix: &impl SequentialMatrixTrait) -> std::fmt::Result {
-    write!(
-        f,
-        "{{ dimension = [{}, {}], values = [",
-        matrix.dimension::<{ ROW }>(),
-        matrix.dimension::<{ COLUMN }>()
-    )?;
+    write!(f, "{{ dimension = [{}, {}], values = [", matrix.dimension()[ROW], matrix.dimension()[COLUMN])?;
     let mut first = true;
     for (index, value) in matrix.iter() {
         if first {

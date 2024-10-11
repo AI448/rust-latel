@@ -2,7 +2,7 @@ use fxhash::FxHashMap as HashMap;
 
 use crate::{
     traits::{MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait},
-    types::Direction::{self, COLUMN, ROW},
+    types::{COLUMN, ROW},
 };
 
 use super::VectorView;
@@ -60,17 +60,16 @@ impl CRSMatrix {
 }
 
 impl MatrixTrait for CRSMatrix {
-    fn dimension<const D: Direction>(&self) -> usize {
-        match D {
-            Direction::ROW => self.row_positions.len() - 1,
-            Direction::COLUMN => self.column_dimension,
-        }
+    #[inline(always)]
+    fn dimension(&self) -> [usize; 2] {
+        [self.row_positions.len() - 1, self.column_dimension]
     }
 }
 
 impl SequentialMatrixTrait for CRSMatrix {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = ([usize; 2], f64)> + Clone + '_ {
-        (0..self.dimension::<{ Direction::ROW }>()).flat_map(move |i| {
+        (0..self.dimension()[ROW]).flat_map(move |i| {
             let from = self.row_positions[i as usize];
             let to = self.row_positions[i as usize + 1];
             (from..to).map(move |k| ([i, self.column_indices[k]], self.values[k]))
@@ -79,6 +78,7 @@ impl SequentialMatrixTrait for CRSMatrix {
 }
 
 impl RowMatrixTrait for CRSMatrix {
+    #[inline(always)]
     fn row(&self, i: usize) -> impl SequentialVectorTrait + '_ {
         let from = self.row_positions[i as usize];
         let to = self.row_positions[i as usize + 1];

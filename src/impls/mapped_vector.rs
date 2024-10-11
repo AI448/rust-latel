@@ -13,18 +13,21 @@ impl<F: Fn(f64) -> f64, V: VectorTrait> MappedVector<F, V> {
 }
 
 impl<F: Fn(f64) -> f64, V: VectorTrait> VectorTrait for MappedVector<F, V> {
+    #[inline(always)]
     fn dimension(&self) -> usize {
         self.vector.dimension()
     }
 }
 
 impl<F: Fn(f64) -> f64, V: SequentialVectorTrait> SequentialVectorTrait for MappedVector<F, V> {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         self.vector.iter().map(|(i, x)| (i, (self.functor)(x)))
     }
 }
 
 impl<F: Fn(f64) -> f64, V: VectorTrait + RandomVectorTrait> RandomVectorTrait for MappedVector<F, V> {
+    #[inline(always)]
     fn get(&self, i: usize) -> f64 {
         (self.functor)(self.vector.get(i))
     }

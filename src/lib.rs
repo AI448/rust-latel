@@ -11,8 +11,8 @@ mod wrappers;
 
 // pub use io::{random_vector_to_json, sequential_vector_to_json};
 pub use traits::{
-    ColumnMatrixTrait, MatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
-    SequentialVectorTrait, VectorTrait,
+    ColumnMatrixTrait, MatrixTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait,
+    SequentialMatrixTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait,
 };
 pub use types::Direction::{self, COLUMN, ROW};
 pub use wrappers::{

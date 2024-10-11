@@ -1,8 +1,5 @@
 use crate::{
-    types::{
-        Direction::{self, COLUMN, ROW},
-        ZERO,
-    },
+    types::{Direction, COLUMN, ROW, ZERO},
     ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait,
 };
 use fxhash::FxHashMap as HashMap;
@@ -141,6 +138,7 @@ impl SparseMatrix {
 
 impl std::ops::Index<[usize; 2]> for SparseMatrix {
     type Output = f64;
+    #[inline(always)]
     fn index(&self, index: [usize; 2]) -> &Self::Output {
         match self.hash_map.get(&index) {
             Some(item) => &unsafe { &*item.get() }.value,
@@ -180,12 +178,14 @@ impl std::ops::IndexMut<[usize; 2]> for SparseMatrix {
 }
 
 impl MatrixTrait for SparseMatrix {
-    fn dimension<const D: Direction>(&self) -> usize {
-        self.headers[D].len()
+    #[inline(always)]
+    fn dimension(&self) -> [usize; 2] {
+        [self.headers[0].len(), self.headers[0].len()]
     }
 }
 
 impl SequentialMatrixTrait for SparseMatrix {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = ([usize; 2], f64)> + '_ + Clone {
         self.hash_map.iter().map(|(_, item)| {
             let item = unsafe { &*item.get() };
@@ -195,12 +195,14 @@ impl SequentialMatrixTrait for SparseMatrix {
 }
 
 impl RowMatrixTrait for SparseMatrix {
+    #[inline(always)]
     fn row(&self, i: usize) -> impl SequentialVectorTrait + '_ {
         VectorView::new(self.headers[ROW].len(), Iter::<{ ROW }>::new(&self, i))
     }
 }
 
 impl ColumnMatrixTrait for SparseMatrix {
+    #[inline(always)]
     fn column(&self, j: usize) -> impl SequentialVectorTrait + '_ {
         VectorView::new(self.headers[COLUMN].len(), Iter::<{ COLUMN }>::new(&self, j))
     }
@@ -214,6 +216,7 @@ struct Iter<'a, const D: Direction> {
 }
 
 impl<'a, const D: Direction> Iter<'a, D> {
+    #[inline(always)]
     fn new(sparse_matrix: &'a SparseMatrix, index: usize) -> Self {
         Self { sparse_matrix: sparse_matrix, index: index, current: None }
     }
@@ -221,6 +224,7 @@ impl<'a, const D: Direction> Iter<'a, D> {
 
 impl<'a, const D: Direction> std::iter::Iterator for Iter<'a, D> {
     type Item = (usize, f64);
+    #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
         self.current = match self.current {
             None => self.sparse_matrix.headers[D][self.index].first,
@@ -233,6 +237,7 @@ impl<'a, const D: Direction> std::iter::Iterator for Iter<'a, D> {
         });
     }
 
+    #[inline(always)]
     fn size_hint(&self) -> (usize, Option<usize>) {
         let len = self.sparse_matrix.headers[D][self.index].len;
         return (len, Some(len));

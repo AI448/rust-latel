@@ -22,30 +22,35 @@ impl DenseVector {
 
 impl std::ops::Index<usize> for DenseVector {
     type Output = f64;
+    #[inline(always)]
     fn index(&self, index: usize) -> &Self::Output {
         &self.values[index]
     }
 }
 
 impl std::ops::IndexMut<usize> for DenseVector {
+    #[inline(always)]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.values[index]
     }
 }
 
 impl VectorTrait for DenseVector {
+    #[inline(always)]
     fn dimension(&self) -> usize {
         self.values.len()
     }
 }
 
 impl SequentialVectorTrait for DenseVector {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         self.values.iter().cloned().enumerate()
     }
 }
 
 impl RandomVectorTrait for DenseVector {
+    #[inline(always)]
     fn get(&self, i: usize) -> f64 {
         self[i]
     }

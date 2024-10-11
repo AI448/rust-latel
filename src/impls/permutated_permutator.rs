@@ -1,5 +1,5 @@
 use crate::traits::PermutatorTrait;
-use crate::types::Direction::{self, COLUMN, ROW};
+use crate::types::{COLUMN, ROW};
 
 #[derive(Debug)]
 pub struct PermutatedPermutator<P1: PermutatorTrait, P2: PermutatorTrait> {
@@ -9,19 +9,18 @@ pub struct PermutatedPermutator<P1: PermutatorTrait, P2: PermutatorTrait> {
 
 impl<P1: PermutatorTrait, P2: PermutatorTrait> PermutatedPermutator<P1, P2> {
     pub fn new(permutator1: P1, permutator2: P2) -> Self {
-        assert!(permutator1.dimension::<{ COLUMN }>() == permutator2.dimension::<{ ROW }>());
+        assert!(permutator1.dimension()[COLUMN] == permutator2.dimension()[ROW]);
         Self { permutator1: permutator1, permutator2: permutator2 }
     }
 }
 
 impl<P1: PermutatorTrait, P2: PermutatorTrait> PermutatorTrait for PermutatedPermutator<P1, P2> {
-    fn dimension<const D: Direction>(&self) -> usize {
-        match D {
-            ROW => self.permutator1.dimension::<{ ROW }>(),
-            COLUMN => self.permutator2.dimension::<{ COLUMN }>(),
-        }
+    #[inline(always)]
+    fn dimension(&self) -> [usize; 2] {
+        [self.permutator1.dimension()[ROW], self.permutator2.dimension()[COLUMN]]
     }
 
+    #[inline(always)]
     fn permutate(&self, i: usize) -> Option<usize> {
         if let Some(j) = self.permutator2.permutate(i) {
             self.permutator1.permutate(j)
@@ -30,6 +29,7 @@ impl<P1: PermutatorTrait, P2: PermutatorTrait> PermutatorTrait for PermutatedPer
         }
     }
 
+    #[inline(always)]
     fn unpermutate(&self, i: usize) -> Option<usize> {
         if let Some(j) = self.permutator1.unpermutate(i) {
             self.permutator2.unpermutate(j)

@@ -1,6 +1,6 @@
 use crate::{
     traits::{LazyVectorTrait, RandomMutVectorTrait},
-    types::Direction::{COLUMN, ROW},
+    types::{COLUMN, ROW},
     ColumnMatrixTrait, SequentialVectorTrait, VectorTrait,
 };
 
@@ -10,8 +10,8 @@ fn add_assign_column_matrix_multiplied_vector(
     rhs_matrix: &impl ColumnMatrixTrait,
     rhs_vector: &impl SequentialVectorTrait,
 ) {
-    assert!(lhs_vector.dimension() == rhs_matrix.dimension::<{ ROW }>());
-    assert!(rhs_matrix.dimension::<{ COLUMN }>() == rhs_vector.dimension());
+    assert!(lhs_vector.dimension() == rhs_matrix.dimension()[ROW]);
+    assert!(rhs_matrix.dimension()[COLUMN] == rhs_vector.dimension());
 
     for (j, y) in rhs_vector.iter() {
         for (i, x) in rhs_matrix.column(j).iter() {
@@ -32,8 +32,9 @@ impl<M: ColumnMatrixTrait, V: SequentialVectorTrait> ColumnMatrixMultipliedVecto
 }
 
 impl<M: ColumnMatrixTrait, V: SequentialVectorTrait> VectorTrait for ColumnMatrixMultipliedVector<M, V> {
+    #[inline(always)]
     fn dimension(&self) -> usize {
-        self.matrix.dimension::<{ ROW }>()
+        self.matrix.dimension()[ROW]
     }
 }
 

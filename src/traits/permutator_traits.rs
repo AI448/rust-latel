@@ -1,7 +1,5 @@
-use crate::types::Direction;
-
 pub trait PermutatorTrait {
-    fn dimension<const D: Direction>(&self) -> usize;
+    fn dimension(&self) -> [usize; 2];
 
     fn permutate(&self, i: usize) -> Option<usize>;
 
@@ -9,8 +7,8 @@ pub trait PermutatorTrait {
 }
 
 impl<P: PermutatorTrait> PermutatorTrait for &P {
-    fn dimension<const D: Direction>(&self) -> usize {
-        (*self).dimension::<{ D }>()
+    fn dimension(&self) -> [usize; 2] {
+        (*self).dimension()
     }
     fn permutate(&self, i: usize) -> Option<usize> {
         (*self).permutate(i)

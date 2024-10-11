@@ -27,6 +27,7 @@ impl CompressedVector {
         self.values.clear();
     }
 
+    #[inline(always)]
     pub fn push(&mut self, i: usize, x: f64) {
         debug_assert!(i < self.dimension);
         if x != 0.0 {
@@ -37,12 +38,14 @@ impl CompressedVector {
 }
 
 impl VectorTrait for CompressedVector {
+    #[inline(always)]
     fn dimension(&self) -> usize {
         self.dimension
     }
 }
 
 impl SequentialVectorTrait for CompressedVector {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         self.indices.iter().cloned().zip(self.values.iter().cloned())
     }

@@ -1,5 +1,4 @@
 use crate::traits::{MatrixTrait, SequentialMatrixTrait};
-use crate::types::Direction;
 
 #[derive(Default, Clone, Debug)]
 pub struct CompressedMatrix {
@@ -24,6 +23,7 @@ impl CompressedMatrix {
         self.items.clear();
     }
 
+    #[inline(always)]
     pub fn push(&mut self, index: [usize; 2], value: f64) {
         assert!(index[0] < self.dimension[0]);
         assert!(index[1] < self.dimension[1]);
@@ -32,12 +32,14 @@ impl CompressedMatrix {
 }
 
 impl MatrixTrait for CompressedMatrix {
-    fn dimension<const D: Direction>(&self) -> usize {
-        self.dimension[D]
+    #[inline(always)]
+    fn dimension(&self) -> [usize; 2] {
+        self.dimension
     }
 }
 
 impl SequentialMatrixTrait for CompressedMatrix {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = ([usize; 2], f64)> + Clone + '_ {
         self.items.iter().cloned()
     }

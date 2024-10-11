@@ -28,18 +28,21 @@ impl SparseVector {
 }
 
 impl VectorTrait for SparseVector {
+    #[inline(always)]
     fn dimension(&self) -> usize {
         self.values.len()
     }
 }
 
 impl SequentialVectorTrait for SparseVector {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         self.nonzero_indices.iter().map(|i| (*i, self.values[*i]))
     }
 }
 
 impl RandomVectorTrait for SparseVector {
+    #[inline(always)]
     fn get(&self, i: usize) -> f64 {
         self.values[i]
     }
@@ -62,12 +65,14 @@ impl SequentialMutVectorTrait for SparseVector {
 
 impl std::ops::Index<usize> for SparseVector {
     type Output = f64;
+    #[inline(always)]
     fn index(&self, index: usize) -> &Self::Output {
         &self.values[index]
     }
 }
 
 impl std::ops::IndexMut<usize> for SparseVector {
+    #[inline(always)]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         if !self.flags[index] {
             debug_assert!(self.values[index] == 0.0);
