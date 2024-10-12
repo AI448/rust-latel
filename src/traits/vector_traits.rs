@@ -2,34 +2,22 @@
 pub trait VectorTrait {
     /// 次元
     fn dimension(&self) -> usize;
-    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait);
-    // where Self: SequentialVectorTrait {
-    //     assert!(lhs.dimension() == self.dimension());
-    //     for (i, x) in self.iter() {
-    //         lhs[i] += x;
-    //     }
-    // }
 
-    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait);
-    // where Self: SequentialVectorTrait {
-    //     assert!(lhs.dimension() == self.dimension());
-    //     for (i, x) in self.iter() {
-    //         lhs[i] -= x;
-    //     }
-    // }
+    fn assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait);
+
+    fn add_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait);
+
+    fn sub_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait);
 }
 
 // NOTE: into_iter(self) が可能なベクトルがあってもいいのかも
-
-// pub trait LazyVectorTrait: VectorTrait {
-//     fn add_assign_to(&self, vector: &mut impl RandomMutVectorTrait);
-// }
 
 /// シーケンシャルアクセス可能なベクトル
 pub trait SequentialVectorTrait: VectorTrait {
     /// 非ゼロ要素の添字と値の組のイテレータ
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_;
 
+    #[inline(always)]
     fn norm(&self) -> f64 {
         // NOTE: 後で考える fma を使ったほうが高精度だったりするのだろうか
         self.iter().map(|(_, x)| x.powi(2)).sum::<f64>().sqrt()
@@ -58,24 +46,33 @@ pub trait RandomMutVectorTrait:
 // VectorTrait への参照も VectorTrait とする
 
 impl<V: VectorTrait> VectorTrait for &V {
+    #[inline(always)]
     fn dimension(&self) -> usize {
         (*self).dimension()
     }
-    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait) {
-        (*self).add_assign_to(lhs);
+    #[inline(always)]
+    fn assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+        (*self).assign_to_random_vector(lhs);
     }
-    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait) {
-        (*self).sub_assign_from(lhs);
+    #[inline(always)]
+    fn add_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+        (*self).add_assign_to_random_vector(lhs);
+    }
+    #[inline(always)]
+    fn sub_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+        (*self).sub_assign_to_random_vector(lhs);
     }
 }
 
 impl<V: SequentialVectorTrait> SequentialVectorTrait for &V {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         (*self).iter()
     }
 }
 
 impl<V: RandomVectorTrait> RandomVectorTrait for &V {
+    #[inline(always)]
     fn get(&self, i: usize) -> f64 {
         (*self).get(i)
     }

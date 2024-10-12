@@ -23,17 +23,17 @@ pub struct SequentialVector<V: SequentialVectorTrait> {
     pub(crate) object: V,
 }
 
-// impl<V: SequentialVectorTrait> VectorTrait for SequentialVector<V> {
-//     fn dimension(&self) -> usize {
-//         self.object.dimension()
-//     }
-// }
+impl<V: RandomVectorTrait> From<RandomVector<V>> for SequentialVector<V> {
+    fn from(value: RandomVector<V>) -> Self {
+        Self { object: value.object }
+    }
+}
 
-// impl<V: SequentialVectorTrait> SequentialVectorTrait for SequentialVector<V> {
-//     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
-//         self.object.iter()
-//     }
-// }
+impl<'a, V: RandomVectorTrait> From<&'a RandomVector<V>> for SequentialVector<&'a V> {
+    fn from(value: &'a RandomVector<V>) -> Self {
+        Self { object: &value.object }
+    }
+}
 
 impl<V: SequentialVectorTrait> std::ops::Deref for SequentialVector<V> {
     type Target = V;
@@ -58,24 +58,6 @@ impl<V: SequentialVectorTrait> std::fmt::Debug for SequentialVector<V> {
 pub struct RandomVector<V: RandomVectorTrait> {
     pub(crate) object: V,
 }
-
-// impl<V: RandomVectorTrait> VectorTrait for RandomVector<V> {
-//     fn dimension(&self) -> usize {
-//         self.object.dimension()
-//     }
-// }
-
-// impl<V: RandomVectorTrait> SequentialVectorTrait for RandomVector<V> {
-//     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
-//         self.object.iter()
-//     }
-// }
-
-// impl<V: RandomVectorTrait> RandomVectorTrait for RandomVector<V> {
-//     fn get(&self, i: usize) -> f64 {
-//         self.object.get(i)
-//     }
-// }
 
 impl<V: RandomVectorTrait> std::ops::Deref for RandomVector<V> {
     type Target = V;

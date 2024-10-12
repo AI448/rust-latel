@@ -20,6 +20,8 @@ pub use wrappers::{
     Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, UnitVector,
 };
 
+pub use operations::Assign;
+
 pub trait FMax: Iterator<Item = f64> + Sized {
     fn fmax(self) -> f64 {
         let mut x = -f64::INFINITY;

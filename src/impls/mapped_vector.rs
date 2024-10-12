@@ -3,7 +3,7 @@ use crate::{
     RandomMutVectorTrait,
 };
 
-use super::operations::{add_assign_sequential_vector, sub_assign_sequential_vector};
+use super::operations::{add_assign_sequential_vector, assign_sequential_vector, sub_assign_sequential_vector};
 
 #[derive(Debug)]
 pub struct MappedVector<F: Fn(f64) -> f64, V: SequentialVectorTrait> {
@@ -23,11 +23,15 @@ impl<F: Fn(f64) -> f64, V: SequentialVectorTrait> VectorTrait for MappedVector<F
         self.vector.dimension()
     }
     #[inline(always)]
-    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait) {
+    fn assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+        assign_sequential_vector(lhs, &self);
+    }
+    #[inline(always)]
+    fn add_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
         add_assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait) {
+    fn sub_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
         sub_assign_sequential_vector(lhs, &self);
     }
 }

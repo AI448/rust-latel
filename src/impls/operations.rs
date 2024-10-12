@@ -1,5 +1,9 @@
 use crate::{ColumnMatrixTrait, RandomMutVectorTrait, SequentialVectorTrait, COLUMN, ROW};
 
+pub fn assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
+    lhs.replace(rhs.dimension(), rhs.iter());
+}
+
 pub fn add_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
     debug_assert!(lhs.dimension() == rhs.dimension());
     for (i, x) in rhs.iter() {
@@ -23,6 +27,16 @@ pub fn add_assign_scalar_multipled_sequential_vector(
     for (i, x) in rhs_vector.iter() {
         lhs[i] = f64::mul_add(rhs_scalar, x, lhs[i]);
     }
+}
+
+pub fn assign_column_matrix_multiplied_vector(
+    lhs: &mut impl RandomMutVectorTrait,
+    rhs_matrix: &impl ColumnMatrixTrait,
+    rhs_vector: &impl SequentialVectorTrait,
+) {
+    assert!(rhs_matrix.dimension()[COLUMN] == rhs_vector.dimension());
+    lhs.replace(rhs_matrix.dimension()[ROW], [].into_iter());
+    add_assign_column_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
 }
 
 pub fn add_assign_column_matrix_multiplied_vector(
