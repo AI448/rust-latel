@@ -7,7 +7,7 @@ use crate::{
 
 use super::VectorView;
 
-#[derive(Clone, Debug)]
+#[derive(Default, Clone, Debug)]
 pub struct CRSMatrix {
     column_dimension: usize,
     row_positions: Vec<usize>,
@@ -17,52 +17,53 @@ pub struct CRSMatrix {
 
 impl CRSMatrix {
     pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
+        let mut matrix = Self::default();
+        matrix.replace(dimension, nonzero_elements);
+        return matrix;
+    }
+
+    pub fn replace<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
         let mut buffer = HashMap::default();
         for ([i, j], x) in nonzero_elements {
             assert!(i < dimension[ROW]);
             assert!(j < dimension[COLUMN]);
+            assert!(!buffer.contains_key(&[i, j]));
             if x != 0.0 {
                 buffer.insert([i, j], x);
             }
         }
 
-        let mut row_positions = Vec::default();
-        row_positions.resize(dimension[ROW] + 1, 0);
-        let mut column_indices = Vec::default();
-        column_indices.resize(buffer.len(), 0);
-        let mut values = Vec::default();
-        values.resize(buffer.len(), 0.0);
+        self.column_dimension = dimension[COLUMN];
+        self.row_positions.clear();
+        self.row_positions.resize(dimension[ROW] + 1, 0);
+        self.column_indices.clear();
+        self.column_indices.resize(buffer.len(), 0);
+        self.values.clear();
+        self.values.resize(buffer.len(), 0.0);
 
         // 各行の要素数をカウント
         for ([i, _], _) in buffer.iter() {
-            row_positions[*i] += 1;
+            self.row_positions[*i] += 1;
         }
         // 各行の終端位置を特定
         for i in 0..dimension[ROW] {
-            row_positions[i + 1] += row_positions[i];
+            self.row_positions[i + 1] += self.row_positions[i];
         }
         // 要素を追加
         for ([i, j], x) in buffer.iter() {
-            let p = &mut row_positions[*i];
+            let p = &mut self.row_positions[*i];
             *p -= 1;
-            column_indices[*p] = *j;
-            values[*p] = *x;
+            self.column_indices[*p] = *j;
+            self.values[*p] = *x;
         }
-        debug_assert!(row_positions[0] == 0);
-
-        Self {
-            column_dimension: dimension[COLUMN],
-            row_positions: row_positions,
-            column_indices: column_indices,
-            values: values,
-        }
+        debug_assert!(self.row_positions[0] == 0);
     }
 }
 
 impl MatrixTrait for CRSMatrix {
     #[inline(always)]
     fn dimension(&self) -> [usize; 2] {
-        [self.row_positions.len() - 1, self.column_dimension]
+        [if self.row_positions.len() == 0 { 0 } else { self.row_positions.len() - 1 }, self.column_dimension]
     }
 }
 

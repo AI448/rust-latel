@@ -5,7 +5,7 @@ use crate::{
 
 use super::crs_matrix::CRSMatrix;
 
-#[derive(Clone, Debug)]
+#[derive(Default, Clone, Debug)]
 pub struct CCSMatrix {
     crs_matrix: CRSMatrix,
 }
@@ -18,6 +18,10 @@ impl CCSMatrix {
                 nonzero_elements.map(|([i, j], x)| ([j, i], x)),
             ),
         }
+    }
+
+    pub fn replace<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
+        self.crs_matrix.replace(dimension.transposed(), nonzero_elements.map(|([i, j], x)| ([j, i], x)));
     }
 }
 

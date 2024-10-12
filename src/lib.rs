@@ -16,8 +16,8 @@ pub use traits::{
 };
 pub use types::Direction::{self, COLUMN, ROW};
 pub use wrappers::{
-    CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, LazyVector, Permutator,
-    RandomVector, RowMatrix, SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, UnitVector,
+    CCSMatrix, CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, LazyVector,
+    Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, UnitVector,
 };
 
 pub trait FMax: Iterator<Item = f64> + Sized {
