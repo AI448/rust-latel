@@ -2,13 +2,28 @@
 pub trait VectorTrait {
     /// 次元
     fn dimension(&self) -> usize;
+    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait);
+    // where Self: SequentialVectorTrait {
+    //     assert!(lhs.dimension() == self.dimension());
+    //     for (i, x) in self.iter() {
+    //         lhs[i] += x;
+    //     }
+    // }
+
+    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait);
+    // where Self: SequentialVectorTrait {
+    //     assert!(lhs.dimension() == self.dimension());
+    //     for (i, x) in self.iter() {
+    //         lhs[i] -= x;
+    //     }
+    // }
 }
 
 // NOTE: into_iter(self) が可能なベクトルがあってもいいのかも
 
-pub trait LazyVectorTrait: VectorTrait {
-    fn add_assign_to(&self, vector: &mut impl RandomMutVectorTrait);
-}
+// pub trait LazyVectorTrait: VectorTrait {
+//     fn add_assign_to(&self, vector: &mut impl RandomMutVectorTrait);
+// }
 
 /// シーケンシャルアクセス可能なベクトル
 pub trait SequentialVectorTrait: VectorTrait {
@@ -19,10 +34,6 @@ pub trait SequentialVectorTrait: VectorTrait {
         // NOTE: 後で考える fma を使ったほうが高精度だったりするのだろうか
         self.iter().map(|(_, x)| x.powi(2)).sum::<f64>().sqrt()
     }
-    // TODO: 後で検討
-    // fn add_assign_to(&self, lhs: &mut RandomMutVectorTrait)
-    // のような関数を定義して，実装を右辺値に応じて切り替えることができる
-    // それによって，右辺値が スカラー×ベクトル であれば fma 命令を使うなどの特殊化っぽいことができるようになる
 }
 
 /// ランダムアクセス可能なベクトル
@@ -49,6 +60,12 @@ pub trait RandomMutVectorTrait:
 impl<V: VectorTrait> VectorTrait for &V {
     fn dimension(&self) -> usize {
         (*self).dimension()
+    }
+    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait) {
+        (*self).add_assign_to(lhs);
+    }
+    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait) {
+        (*self).sub_assign_from(lhs);
     }
 }
 

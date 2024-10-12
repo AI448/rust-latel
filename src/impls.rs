@@ -6,6 +6,7 @@ mod dense_vector;
 mod full_permutator;
 mod mapped_vector;
 mod matrix_multiplied_vector;
+mod operations;
 mod permutated_matrix;
 mod permutated_permutator;
 mod permutated_vector;

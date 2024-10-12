@@ -1,0 +1,50 @@
+use crate::{ColumnMatrixTrait, RandomMutVectorTrait, SequentialVectorTrait, COLUMN, ROW};
+
+pub fn add_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
+    debug_assert!(lhs.dimension() == rhs.dimension());
+    for (i, x) in rhs.iter() {
+        lhs[i] += x;
+    }
+}
+
+pub fn sub_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
+    debug_assert!(lhs.dimension() == rhs.dimension());
+    for (i, x) in rhs.iter() {
+        lhs[i] -= x;
+    }
+}
+
+pub fn add_assign_scalar_multipled_sequential_vector(
+    lhs: &mut impl RandomMutVectorTrait,
+    rhs_scalar: f64,
+    rhs_vector: &impl SequentialVectorTrait,
+) {
+    debug_assert!(lhs.dimension() == rhs_vector.dimension());
+    for (i, x) in rhs_vector.iter() {
+        lhs[i] = f64::mul_add(rhs_scalar, x, lhs[i]);
+    }
+}
+
+pub fn add_assign_column_matrix_multiplied_vector(
+    lhs: &mut impl RandomMutVectorTrait,
+    rhs_matrix: &impl ColumnMatrixTrait,
+    rhs_vector: &impl SequentialVectorTrait,
+) {
+    assert!(lhs.dimension() == rhs_matrix.dimension()[ROW]);
+    assert!(rhs_matrix.dimension()[COLUMN] == rhs_vector.dimension());
+    for (j, a) in rhs_vector.iter() {
+        add_assign_scalar_multipled_sequential_vector(lhs, a, &rhs_matrix.column(j));
+    }
+}
+
+pub fn sub_assign_column_matrix_multiplied_vector(
+    lhs: &mut impl RandomMutVectorTrait,
+    rhs_matrix: &impl ColumnMatrixTrait,
+    rhs_vector: &impl SequentialVectorTrait,
+) {
+    debug_assert!(lhs.dimension() == rhs_matrix.dimension()[ROW]);
+    debug_assert!(rhs_matrix.dimension()[COLUMN] == rhs_vector.dimension());
+    for (j, a) in rhs_vector.iter() {
+        add_assign_scalar_multipled_sequential_vector(lhs, -a, &rhs_matrix.column(j));
+    }
+}

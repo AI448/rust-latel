@@ -1,23 +1,34 @@
 use crate::traits::{PermutatorTrait, RandomVectorTrait, SequentialVectorTrait, VectorTrait};
 use crate::types::{COLUMN, ROW};
+use crate::RandomMutVectorTrait;
+
+use super::operations::{add_assign_sequential_vector, sub_assign_sequential_vector};
 
 #[derive(Debug)]
-pub struct PermutatedVector<P: PermutatorTrait, V: VectorTrait> {
+pub struct PermutatedVector<P: PermutatorTrait, V: SequentialVectorTrait> {
     permutator: P,
     vector: V,
 }
 
-impl<P: PermutatorTrait, V: VectorTrait> PermutatedVector<P, V> {
+impl<P: PermutatorTrait, V: SequentialVectorTrait> PermutatedVector<P, V> {
     pub fn new(permutator: P, vector: V) -> Self {
         assert!(permutator.dimension()[COLUMN] == vector.dimension());
         Self { permutator: permutator, vector: vector }
     }
 }
 
-impl<P: PermutatorTrait, V: VectorTrait> VectorTrait for PermutatedVector<P, V> {
+impl<P: PermutatorTrait, V: SequentialVectorTrait> VectorTrait for PermutatedVector<P, V> {
     #[inline(always)]
     fn dimension(&self) -> usize {
         self.permutator.dimension()[ROW]
+    }
+    #[inline(always)]
+    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait) {
+        add_assign_sequential_vector(lhs, &self);
+    }
+    #[inline(always)]
+    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait) {
+        sub_assign_sequential_vector(lhs, &self);
     }
 }
 

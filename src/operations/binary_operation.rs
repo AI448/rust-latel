@@ -3,13 +3,13 @@ use crate::impls::{
     RowPermutatedMatrix,
 };
 use crate::traits::{
-    ColumnMatrixTrait, LazyVectorTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait,
-    SequentialMatrixTrait, SequentialVectorTrait,
+    ColumnMatrixTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
+    SequentialVectorTrait,
 };
 use crate::wrappers::{
     BidirectionalMatrix, ColumnMatrix, Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector,
 };
-use crate::LazyVector;
+use crate::{LazyVector, VectorTrait};
 use std::ops::{Div, Mul, Neg};
 
 macro_rules! impl_nonscalar_unary_operation {
@@ -88,13 +88,13 @@ macro_rules! impl_nonscalar_scalar_binary_operation {
                 $result_wrapper { object: $closure(self.object, rhs) }
             }
         }
-        // impl<V: $lhs_trait> $op_trait<f64> for &$lhs_wrapper<V> {
-        //     type Output = $result_wrapper<impl $result_trait>;
-        //     #[inline(always)]
-        //     fn $op_func(self, rhs: f64) -> Self::Output {
-        //         $result_wrapper { object: $closure(&self.object, rhs) }
-        //     }
-        // }
+        impl<V: $lhs_trait> $op_trait<f64> for &$lhs_wrapper<V> {
+            type Output = $result_wrapper<impl $result_trait>;
+            #[inline(always)]
+            fn $op_func(self, rhs: f64) -> Self::Output {
+                $result_wrapper { object: $closure(&self.object, rhs) }
+            }
+        }
         impl<V: $lhs_trait> $op_trait<&f64> for $lhs_wrapper<V> {
             type Output = $result_wrapper<impl $result_trait>;
             #[inline(always)]
@@ -102,13 +102,13 @@ macro_rules! impl_nonscalar_scalar_binary_operation {
                 $result_wrapper { object: $closure(self.object, *rhs) }
             }
         }
-        // impl<V: $lhs_trait> $op_trait<&f64> for &$lhs_wrapper<V> {
-        //     type Output = $result_wrapper<impl $result_trait>;
-        //     #[inline(always)]
-        //     fn $op_func(self, rhs: &f64) -> Self::Output {
-        //         $result_wrapper { object: $closure(&self.object, *rhs) }
-        //     }
-        // }
+        impl<V: $lhs_trait> $op_trait<&f64> for &$lhs_wrapper<V> {
+            type Output = $result_wrapper<impl $result_trait>;
+            #[inline(always)]
+            fn $op_func(self, rhs: &f64) -> Self::Output {
+                $result_wrapper { object: $closure(&self.object, *rhs) }
+            }
+        }
     };
 }
 
@@ -429,7 +429,7 @@ impl_nonscalar_nonscalar_binary_operation!(
     SequentialVector,
     SequentialVectorTrait,
     LazyVector,
-    LazyVectorTrait,
+    VectorTrait,
     |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
 );
 
@@ -441,7 +441,7 @@ impl_nonscalar_nonscalar_binary_operation!(
     RandomVector,
     RandomVectorTrait,
     LazyVector,
-    LazyVectorTrait,
+    VectorTrait,
     |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
 );
 
@@ -494,45 +494,57 @@ macro_rules! impl_add_assign {
     ) => {
         impl<L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::AddAssign<$rhs_wrapper<R>> for $lhs_wrapper<L> {
             fn add_assign(&mut self, rhs: $rhs_wrapper<R>) {
-                assert!(self.dimension() == rhs.dimension());
-                for (key, value) in rhs.object.iter() {
-                    self.object[key] += value;
-                }
+                rhs.add_assign_to(&mut self.object);
+                // assert!(self.dimension() == rhs.dimension());
+                // for (key, value) in rhs.object.iter() {
+                //     self.object[key] += value;
+                // }
             }
         }
         impl<'a, L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::AddAssign<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
             fn add_assign(&mut self, rhs: &'a $rhs_wrapper<R>) {
-                assert!(self.dimension() == rhs.dimension());
-                for (key, value) in rhs.object.iter() {
-                    self.object[key] += value;
-                }
+                rhs.add_assign_to(&mut self.object);
+                // assert!(self.dimension() == rhs.dimension());
+                // for (key, value) in rhs.object.iter() {
+                //     self.object[key] += value;
+                // }
             }
         }
         impl<L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::SubAssign<$rhs_wrapper<R>> for $lhs_wrapper<L> {
             fn sub_assign(&mut self, rhs: $rhs_wrapper<R>) {
-                assert!(self.dimension() == rhs.dimension());
-                for (key, value) in rhs.object.iter() {
-                    self.object[key] -= value;
-                }
+                rhs.sub_assign_from(&mut self.object);
+                // assert!(self.dimension() == rhs.dimension());
+                // for (key, value) in rhs.object.iter() {
+                //     self.object[key] -= value;
+                // }
             }
         }
         impl<'a, L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::SubAssign<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
             fn sub_assign(&mut self, rhs: &'a $rhs_wrapper<R>) {
-                assert!(self.dimension() == rhs.dimension());
-                for (key, value) in rhs.object.iter() {
-                    self.object[key] -= value;
-                }
+                rhs.sub_assign_from(&mut self.object);
+                // assert!(self.dimension() == rhs.dimension());
+                // for (key, value) in rhs.object.iter() {
+                //     self.object[key] -= value;
+                // }
             }
         }
     };
 }
 
+impl_add_assign!(RandomVector, RandomMutVectorTrait, LazyVector, VectorTrait);
+
 impl_add_assign!(RandomVector, RandomMutVectorTrait, SequentialVector, SequentialVectorTrait);
 
 impl_add_assign!(RandomVector, RandomMutVectorTrait, RandomVector, RandomVectorTrait);
 
-impl<L: RandomMutVectorTrait, R: LazyVectorTrait> std::ops::AddAssign<LazyVector<R>> for RandomVector<L> {
-    fn add_assign(&mut self, rhs: LazyVector<R>) {
-        rhs.object.add_assign_to(&mut self.object);
-    }
-}
+// impl<L: RandomMutVectorTrait, R: VectorTrait> std::ops::AddAssign<LazyVector<R>> for RandomVector<L> {
+//     fn add_assign(&mut self, rhs: LazyVector<R>) {
+//         rhs.object.add_assign_to(&mut self.object);
+//     }
+// }
+
+// impl<L: RandomMutVectorTrait, R: VectorTrait> std::ops::SubAssign<LazyVector<R>> for RandomVector<L> {
+//     fn sub_assign(&mut self, rhs: LazyVector<R>) {
+//         rhs.object.sub_assign_from(&mut self.object);
+//     }
+// }

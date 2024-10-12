@@ -2,6 +2,8 @@ use crate::traits::{
     RandomMutVectorTrait, RandomVectorTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait,
 };
 
+use super::operations::{add_assign_sequential_vector, sub_assign_sequential_vector};
+
 #[derive(Default, Clone, Debug)]
 pub struct DenseVector {
     values: Vec<f64>,
@@ -39,6 +41,14 @@ impl VectorTrait for DenseVector {
     #[inline(always)]
     fn dimension(&self) -> usize {
         self.values.len()
+    }
+    #[inline(always)]
+    fn add_assign_to(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+        add_assign_sequential_vector(lhs, &self);
+    }
+    #[inline(always)]
+    fn sub_assign_from(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+        sub_assign_sequential_vector(lhs, &self);
     }
 }
 

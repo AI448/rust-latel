@@ -1,24 +1,6 @@
-use crate::{
-    traits::{LazyVectorTrait, RandomMutVectorTrait},
-    types::{COLUMN, ROW},
-    ColumnMatrixTrait, SequentialVectorTrait, VectorTrait,
-};
+use crate::{traits::RandomMutVectorTrait, types::ROW, ColumnMatrixTrait, SequentialVectorTrait, VectorTrait};
 
-// RandomMutVectorTrait += ColumnMatrixTrait * SequencialVectorTrait
-fn add_assign_column_matrix_multiplied_vector(
-    lhs_vector: &mut impl RandomMutVectorTrait,
-    rhs_matrix: &impl ColumnMatrixTrait,
-    rhs_vector: &impl SequentialVectorTrait,
-) {
-    assert!(lhs_vector.dimension() == rhs_matrix.dimension()[ROW]);
-    assert!(rhs_matrix.dimension()[COLUMN] == rhs_vector.dimension());
-
-    for (j, y) in rhs_vector.iter() {
-        for (i, x) in rhs_matrix.column(j).iter() {
-            lhs_vector[i] += x * y;
-        }
-    }
-}
+use super::operations::{add_assign_column_matrix_multiplied_vector, sub_assign_column_matrix_multiplied_vector};
 
 pub struct ColumnMatrixMultipliedVector<M: ColumnMatrixTrait, V: SequentialVectorTrait> {
     matrix: M,
@@ -36,10 +18,12 @@ impl<M: ColumnMatrixTrait, V: SequentialVectorTrait> VectorTrait for ColumnMatri
     fn dimension(&self) -> usize {
         self.matrix.dimension()[ROW]
     }
-}
-
-impl<M: ColumnMatrixTrait, V: SequentialVectorTrait> LazyVectorTrait for ColumnMatrixMultipliedVector<M, V> {
-    fn add_assign_to(&self, vector: &mut impl RandomMutVectorTrait) {
-        add_assign_column_matrix_multiplied_vector(vector, &self.matrix, &self.vector);
+    #[inline(always)]
+    fn add_assign_to(&self, lhs: &mut impl RandomMutVectorTrait) {
+        add_assign_column_matrix_multiplied_vector(lhs, &self.matrix, &self.vector);
+    }
+    #[inline(always)]
+    fn sub_assign_from(&self, lhs: &mut impl RandomMutVectorTrait) {
+        sub_assign_column_matrix_multiplied_vector(lhs, &self.matrix, &self.vector);
     }
 }
