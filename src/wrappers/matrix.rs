@@ -1,5 +1,5 @@
 use crate::types::Direction::{COLUMN, ROW};
-use crate::wrappers::SequentialVector;
+use crate::wrappers::SequentialVectorWrapper;
 use crate::{impls, ColumnMatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait};
 
 #[derive(Default, Clone)]
@@ -57,8 +57,8 @@ impl<M: RowMatrixTrait> std::ops::DerefMut for RowMatrix<M> {
 }
 
 impl<M: RowMatrixTrait> RowMatrix<M> {
-    pub fn row(&self, i: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector { object: self.object.row(i) }
+    pub fn row(&self, i: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
+        SequentialVectorWrapper { object: self.object.row(i) }
     }
 
     #[allow(non_snake_case)]
@@ -97,8 +97,8 @@ impl<M: ColumnMatrixTrait> std::ops::DerefMut for ColumnMatrix<M> {
 }
 
 impl<M: ColumnMatrixTrait> ColumnMatrix<M> {
-    pub fn column(&self, j: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector { object: self.object.column(j) }
+    pub fn column(&self, j: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
+        SequentialVectorWrapper { object: self.object.column(j) }
     }
 
     #[allow(non_snake_case)]
@@ -137,12 +137,12 @@ impl<M: RowMatrixTrait + ColumnMatrixTrait> std::ops::DerefMut for Bidirectional
 }
 
 impl<M: RowMatrixTrait + ColumnMatrixTrait> BidirectionalMatrix<M> {
-    pub fn row(&self, i: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector { object: self.object.row(i) }
+    pub fn row(&self, i: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
+        SequentialVectorWrapper { object: self.object.row(i) }
     }
 
-    pub fn column(&self, j: usize) -> SequentialVector<impl SequentialVectorTrait + '_> {
-        SequentialVector { object: self.object.column(j) }
+    pub fn column(&self, j: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
+        SequentialVectorWrapper { object: self.object.column(j) }
     }
 
     #[allow(non_snake_case)]

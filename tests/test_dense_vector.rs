@@ -1,8 +1,8 @@
-use latel::DenseVector;
+use latel::{DenseVector, ReplaceBy};
 
 #[test]
 fn test() {
-    let x = DenseVector::new(3, [(0, 0.0), (1, 1.0), (2, 2.0)].into_iter());
+    let x = DenseVector::from_iter(3, [(0, 0.0), (1, 1.0), (2, 2.0)].into_iter());
     assert!(x[0] == 0.0);
     assert!(x[1] == 1.0);
     assert!(x[2] == 2.0);
@@ -28,7 +28,7 @@ fn test() {
     // クリアしてみたり
     a.zero_clear();
     dbg!(&a);
-    // // 代入してみたり
-    // a <<= &x;
-    // dbg!(&a);
+    // 代入してみたり
+    a.replace_by(&x);
+    dbg!(&a);
 }

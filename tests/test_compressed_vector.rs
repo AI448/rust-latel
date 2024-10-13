@@ -2,7 +2,7 @@ use latel::CompressedVector;
 
 #[test]
 fn test() {
-    let mut x = CompressedVector::new(3, [(0, 0.0), (1, 1.0), (2, 2.0)].into_iter());
+    let mut x = CompressedVector::from_iter(3, [(0, 0.0), (1, 1.0), (2, 2.0)].into_iter());
     dbg!(&x);
     {
         // 掛けたり

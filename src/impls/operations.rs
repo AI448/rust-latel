@@ -1,7 +1,7 @@
 use crate::{ColumnMatrixTrait, RandomMutVectorTrait, SequentialVectorTrait, COLUMN, ROW};
 
 pub fn assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
-    lhs.replace(rhs.dimension(), rhs.iter());
+    lhs.replace_by_iter(rhs.dimension(), rhs.iter());
 }
 
 pub fn add_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
@@ -35,7 +35,7 @@ pub fn assign_column_matrix_multiplied_vector(
     rhs_vector: &impl SequentialVectorTrait,
 ) {
     assert!(rhs_matrix.dimension()[COLUMN] == rhs_vector.dimension());
-    lhs.replace(rhs_matrix.dimension()[ROW], [].into_iter());
+    lhs.replace_by_iter(rhs_matrix.dimension()[ROW], [].into_iter());
     add_assign_column_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
 }
 

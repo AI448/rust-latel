@@ -14,11 +14,11 @@ pub struct SparseVector {
 }
 
 impl SparseVector {
-    pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-        let mut v = Self::default();
-        v.replace(dimension, nonzero_elements);
-        return v;
-    }
+    // pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
+    //     let mut v = Self::default();
+    //     v.replace(dimension, nonzero_elements);
+    //     return v;
+    // }
 
     pub fn zero_clear(&mut self) {
         while let Some(i) = self.nonzero_indices.pop() {
@@ -39,11 +39,11 @@ impl VectorTrait for SparseVector {
         assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn add_assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+    fn add_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         add_assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn sub_assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+    fn sub_from_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         sub_assign_sequential_vector(lhs, &self);
     }
 }
@@ -63,7 +63,7 @@ impl RandomVectorTrait for SparseVector {
 }
 
 impl SequentialMutVectorTrait for SparseVector {
-    fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
+    fn replace_by_iter<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
         self.zero_clear();
         self.values.resize(dimension, 0.0);
         self.flags.resize(dimension, false);

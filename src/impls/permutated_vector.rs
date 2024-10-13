@@ -27,11 +27,11 @@ impl<P: PermutatorTrait, V: SequentialVectorTrait> VectorTrait for PermutatedVec
         assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn add_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+    fn add_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
         add_assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn sub_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+    fn sub_from_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
         sub_assign_sequential_vector(lhs, &self);
     }
 }

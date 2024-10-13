@@ -13,11 +13,11 @@ pub struct CompressedVector {
 }
 
 impl CompressedVector {
-    pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-        let mut x = Self::default();
-        x.replace(dimension, nonzero_elements);
-        return x;
-    }
+    // pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
+    //     let mut x = Self::default();
+    //     x.replace(dimension, nonzero_elements);
+    //     return x;
+    // }
 
     pub fn clear(&mut self) {
         self.dimension = 0;
@@ -45,11 +45,11 @@ impl VectorTrait for CompressedVector {
         assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn add_assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+    fn add_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         add_assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn sub_assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+    fn sub_from_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         sub_assign_sequential_vector(lhs, &self);
     }
 }
@@ -62,7 +62,7 @@ impl SequentialVectorTrait for CompressedVector {
 }
 
 impl SequentialMutVectorTrait for CompressedVector {
-    fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
+    fn replace_by_iter<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
         self.dimension = dimension;
         self.indices.clear();
         self.values.clear();

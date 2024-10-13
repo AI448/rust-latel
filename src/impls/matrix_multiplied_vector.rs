@@ -26,11 +26,11 @@ impl<M: ColumnMatrixTrait, V: SequentialVectorTrait> VectorTrait for ColumnMatri
         assign_column_matrix_multiplied_vector(lhs, &self.matrix, &self.vector);
     }
     #[inline(always)]
-    fn add_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+    fn add_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
         add_assign_column_matrix_multiplied_vector(lhs, &self.matrix, &self.vector);
     }
     #[inline(always)]
-    fn sub_assign_to_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
+    fn sub_from_random_vector(&self, lhs: &mut impl RandomMutVectorTrait) {
         sub_assign_column_matrix_multiplied_vector(lhs, &self.matrix, &self.vector);
     }
 }

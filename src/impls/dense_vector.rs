@@ -10,11 +10,11 @@ pub struct DenseVector {
 }
 
 impl DenseVector {
-    pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-        let mut v = Self::default();
-        v.replace(dimension, nonzero_elements);
-        return v;
-    }
+    // pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
+    //     let mut v = Self::default();
+    //     v.replace(dimension, nonzero_elements);
+    //     return v;
+    // }
 
     /// 全ての要素を 0 にする
     pub fn zero_clear(&mut self) {
@@ -47,11 +47,11 @@ impl VectorTrait for DenseVector {
         assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn add_assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+    fn add_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         add_assign_sequential_vector(lhs, &self);
     }
     #[inline(always)]
-    fn sub_assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
+    fn sub_from_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         sub_assign_sequential_vector(lhs, &self);
     }
 }
@@ -71,7 +71,7 @@ impl RandomVectorTrait for DenseVector {
 }
 
 impl SequentialMutVectorTrait for DenseVector {
-    fn replace<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
+    fn replace_by_iter<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
         if dimension < self.values.len() {
             self.values.truncate(dimension);
             self.values.fill(0.0);

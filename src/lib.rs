@@ -16,11 +16,12 @@ pub use traits::{
 };
 pub use types::Direction::{self, COLUMN, ROW};
 pub use wrappers::{
-    CCSMatrix, CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, LazyVector,
-    Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector, SparseMatrix, SparseVector, UnitVector,
+    CCSMatrix, CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, Permutator,
+    RandomVectorWrapper, RowMatrix, SequentialMatrix, SequentialVectorWrapper, SparseMatrix, SparseVector, UnitVector,
+    VectorWrapper,
 };
 
-pub use operations::Assign;
+pub use operations::{GenerateFrom, ReplaceBy};
 
 pub trait FMax: Iterator<Item = f64> + Sized {
     fn fmax(self) -> f64 {

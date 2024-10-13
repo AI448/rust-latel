@@ -3,13 +3,14 @@ use crate::impls::{
     RowPermutatedMatrix,
 };
 use crate::traits::{
-    ColumnMatrixTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
-    SequentialVectorTrait,
+    ColumnMatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
+    SequentialVectorTrait, VectorTrait,
 };
 use crate::wrappers::{
-    BidirectionalMatrix, ColumnMatrix, Permutator, RandomVector, RowMatrix, SequentialMatrix, SequentialVector,
+    BidirectionalMatrix, ColumnMatrix, Permutator, RandomVectorWrapper, RowMatrix, SequentialMatrix,
+    SequentialVectorWrapper, VectorWrapper,
 };
-use crate::{LazyVector, SequentialMutVectorTrait, VectorTrait};
+
 use std::ops::{Div, Mul, Neg};
 
 macro_rules! impl_nonscalar_unary_operation {
@@ -155,25 +156,31 @@ macro_rules! impl_nonscalar_nonscalar_binary_operation {
 impl_nonscalar_unary_operation!(
     Neg,
     neg,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
     |vector| MappedVector::new(|x| -x, vector)
 );
 
 // -RandomVector -> RandomVector
-impl_nonscalar_unary_operation!(Neg, neg, RandomVector, RandomVectorTrait, RandomVector, RandomVectorTrait, |vector| {
-    MappedVector::new(|x| -x, vector)
-});
+impl_nonscalar_unary_operation!(
+    Neg,
+    neg,
+    RandomVectorWrapper,
+    RandomVectorTrait,
+    RandomVectorWrapper,
+    RandomVectorTrait,
+    |vector| { MappedVector::new(|x| -x, vector) }
+);
 
 // Scalar * SequentialVector -> SequentialVector
 impl_scalar_nonscalar_binary_operation!(
     Mul,
     mul,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
     |lhs, rhs| MappedVector::new(move |x| lhs * x, rhs)
 );
@@ -182,9 +189,9 @@ impl_scalar_nonscalar_binary_operation!(
 impl_scalar_nonscalar_binary_operation!(
     Mul,
     mul,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
     |lhs, rhs| MappedVector::new(move |x| lhs * x, rhs)
 );
@@ -193,9 +200,9 @@ impl_scalar_nonscalar_binary_operation!(
 impl_nonscalar_scalar_binary_operation!(
     Mul,
     mul,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
     |vector, scalar| MappedVector::new(move |x| x * scalar, vector)
 );
@@ -204,9 +211,9 @@ impl_nonscalar_scalar_binary_operation!(
 impl_nonscalar_scalar_binary_operation!(
     Mul,
     mul,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
     |vector, scalar| MappedVector::new(move |x| x * scalar, vector)
 );
@@ -215,9 +222,9 @@ impl_nonscalar_scalar_binary_operation!(
 impl_nonscalar_scalar_binary_operation!(
     Div,
     div,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
     |vector, scalar| MappedVector::new(move |x| x / scalar, vector)
 );
@@ -226,9 +233,9 @@ impl_nonscalar_scalar_binary_operation!(
 impl_nonscalar_scalar_binary_operation!(
     Div,
     div,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
     |vector, scalar| MappedVector::new(move |x| x / scalar, vector)
 );
@@ -253,23 +260,27 @@ fn mul_sequential_vector_and_random_vector(lhs: &impl SequentialVectorTrait, rhs
     return z;
 }
 
-impl<U: RandomVectorTrait, V: SequentialVectorTrait> std::ops::Mul<&SequentialVector<V>> for &RandomVector<U> {
+impl<U: RandomVectorTrait, V: SequentialVectorTrait> std::ops::Mul<&SequentialVectorWrapper<V>>
+    for &RandomVectorWrapper<U>
+{
     type Output = f64;
-    fn mul(self, rhs: &SequentialVector<V>) -> Self::Output {
+    fn mul(self, rhs: &SequentialVectorWrapper<V>) -> Self::Output {
         mul_random_vector_and_sequential_vector(&self.object, &rhs.object)
     }
 }
 
-impl<U: SequentialVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVector<V>> for &SequentialVector<U> {
+impl<U: SequentialVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVectorWrapper<V>>
+    for &SequentialVectorWrapper<U>
+{
     type Output = f64;
-    fn mul(self, rhs: &RandomVector<V>) -> Self::Output {
+    fn mul(self, rhs: &RandomVectorWrapper<V>) -> Self::Output {
         mul_sequential_vector_and_random_vector(&self.object, &rhs.object)
     }
 }
 
-impl<U: RandomVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVector<V>> for &RandomVector<U> {
+impl<U: RandomVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVectorWrapper<V>> for &RandomVectorWrapper<U> {
     type Output = f64;
-    fn mul(self, rhs: &RandomVector<V>) -> Self::Output {
+    fn mul(self, rhs: &RandomVectorWrapper<V>) -> Self::Output {
         if self.iter().size_hint().0 <= rhs.iter().size_hint().0 {
             mul_sequential_vector_and_random_vector(&self.object, &rhs.object)
         } else {
@@ -284,9 +295,9 @@ impl_nonscalar_nonscalar_binary_operation!(
     mul,
     Permutator,
     PermutatorTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
     |permutator, vector| PermutatedVector::new(permutator, vector)
 );
@@ -297,9 +308,9 @@ impl_nonscalar_nonscalar_binary_operation!(
     mul,
     Permutator,
     PermutatorTrait,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
     |permutator, vector| PermutatedVector::new(permutator, vector)
 );
@@ -426,9 +437,9 @@ impl_nonscalar_nonscalar_binary_operation!(
     mul,
     ColumnMatrix,
     ColumnMatrixTrait,
-    SequentialVector,
+    SequentialVectorWrapper,
     SequentialVectorTrait,
-    LazyVector,
+    VectorWrapper,
     VectorTrait,
     |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
 );
@@ -438,93 +449,9 @@ impl_nonscalar_nonscalar_binary_operation!(
     mul,
     ColumnMatrix,
     ColumnMatrixTrait,
-    RandomVector,
+    RandomVectorWrapper,
     RandomVectorTrait,
-    LazyVector,
+    VectorWrapper,
     VectorTrait,
     |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
 );
-
-macro_rules! impl_assign_to_sequential_vector {
-    (
-        $lhs_wrapper: ident, $lhs_trait1: ident $(+ $lhs_trait2: ident)*,
-        $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*
-    ) => {
-        impl<L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> Assign<$rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn assign(&mut self, rhs: $rhs_wrapper<R>) {
-                self.object.replace(rhs.dimension(), rhs.iter());
-            }
-        }
-        impl<'a, L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> Assign<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn assign(&mut self, rhs: &'a $rhs_wrapper<R>) {
-                self.object.replace(rhs.dimension(), rhs.iter());
-            }
-        }
-    }
-}
-
-impl_assign_to_sequential_vector!(SequentialVector, SequentialMutVectorTrait, SequentialVector, SequentialVectorTrait);
-
-impl_assign_to_sequential_vector!(SequentialVector, SequentialMutVectorTrait, RandomVector, RandomVectorTrait);
-
-pub trait Assign<R> {
-    fn assign(&mut self, rhs: R);
-}
-
-macro_rules! impl_assign_to_random_vector {
-    (
-        $lhs_wrapper: ident, $lhs_trait1: ident $(+ $lhs_trait2: ident)*,
-        $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*
-    ) => {
-        impl<L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> Assign<$rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn assign(&mut self, rhs: $rhs_wrapper<R>) {
-                rhs.object.assign_to_random_vector(&mut self.object);
-            }
-        }
-        impl<'a, L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> Assign<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn assign(&mut self, rhs: &'a $rhs_wrapper<R>) {
-                rhs.object.assign_to_random_vector(&mut self.object);
-            }
-        }
-    }
-}
-
-macro_rules! impl_add_assign_to_random_vector {
-    (
-        $lhs_wrapper: ident, $lhs_trait1: ident $(+ $lhs_trait2: ident)*,
-        $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*
-    ) => {
-        impl<L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::AddAssign<$rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn add_assign(&mut self, rhs: $rhs_wrapper<R>) {
-                rhs.add_assign_to_random_vector(&mut self.object);
-            }
-        }
-        impl<'a, L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::AddAssign<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn add_assign(&mut self, rhs: &'a $rhs_wrapper<R>) {
-                rhs.add_assign_to_random_vector(&mut self.object);
-            }
-        }
-        impl<L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::SubAssign<$rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn sub_assign(&mut self, rhs: $rhs_wrapper<R>) {
-                rhs.sub_assign_to_random_vector(&mut self.object);
-            }
-        }
-        impl<'a, L: $lhs_trait1 $(+$lhs_trait2)*, R: $rhs_trait1 $(+$rhs_trait2)*> std::ops::SubAssign<&'a $rhs_wrapper<R>> for $lhs_wrapper<L> {
-            fn sub_assign(&mut self, rhs: &'a $rhs_wrapper<R>) {
-                rhs.sub_assign_to_random_vector(&mut self.object);
-            }
-        }
-    };
-}
-
-impl_assign_to_random_vector!(RandomVector, RandomMutVectorTrait, LazyVector, VectorTrait);
-
-impl_assign_to_random_vector!(RandomVector, RandomMutVectorTrait, SequentialVector, SequentialVectorTrait);
-
-impl_assign_to_random_vector!(RandomVector, RandomMutVectorTrait, RandomVector, RandomVectorTrait);
-
-impl_add_assign_to_random_vector!(RandomVector, RandomMutVectorTrait, LazyVector, VectorTrait);
-
-impl_add_assign_to_random_vector!(RandomVector, RandomMutVectorTrait, SequentialVector, SequentialVectorTrait);
-
-impl_add_assign_to_random_vector!(RandomVector, RandomMutVectorTrait, RandomVector, RandomVectorTrait);
