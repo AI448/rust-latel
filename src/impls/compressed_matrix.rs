@@ -1,4 +1,4 @@
-use crate::traits::{MatrixTrait, SequentialMatrixTrait};
+use crate::traits::{MatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait};
 
 #[derive(Default, Clone, Debug)]
 pub struct CompressedMatrix {
@@ -6,18 +6,15 @@ pub struct CompressedMatrix {
     items: Vec<([usize; 2], f64)>,
 }
 
-impl CompressedMatrix {
-    pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], items: I) -> Self {
-        Self { dimension: dimension, items: Vec::from_iter(items) }
+impl SequentialMutMatrixTrait for CompressedMatrix {
+    fn replace_by_iter<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
+        self.dimension = dimension;
+        self.items.clear();
+        self.items.extend(nonzero_elements);
     }
+}
 
-    // pub fn replace(&mut self, matrix: &impl SequentialMatrixTrait)
-    // {
-    //     self.dimension = [matrix.dimension::<{ROW}>(), matrix.dimension::<{COLUMN}>()];
-    //     self.items.clear();
-    //     self.items.extend(matrix.iter());
-    // }
-
+impl CompressedMatrix {
     pub fn clear(&mut self) {
         self.dimension = [0, 0];
         self.items.clear();

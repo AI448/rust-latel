@@ -34,7 +34,7 @@ pub trait RandomVectorTrait: SequentialVectorTrait {
 
 /// 代入可能なベクトル
 pub trait SequentialMutVectorTrait: SequentialVectorTrait + Default {
-    fn from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
+    fn generate_from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         let mut vector = Self::default();
         vector.replace_by_iter(dimension, nonzero_elements);
         return vector;

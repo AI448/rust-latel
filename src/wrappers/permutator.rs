@@ -1,5 +1,6 @@
 use crate::{impls, PermutatorTrait};
 
+#[derive(Default, Clone, Debug)]
 pub struct Permutator<P: PermutatorTrait> {
     pub(crate) object: P,
 }

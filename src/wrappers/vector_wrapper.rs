@@ -8,12 +8,14 @@ pub struct VectorWrapper<V: VectorTrait> {
 
 impl<V: VectorTrait> std::ops::Deref for VectorWrapper<V> {
     type Target = V;
+    #[inline(always)]
     fn deref(&self) -> &Self::Target {
         &self.object
     }
 }
 
 impl<V: VectorTrait> std::ops::DerefMut for VectorWrapper<V> {
+    #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.object
     }
@@ -26,12 +28,14 @@ pub struct SequentialVectorWrapper<V: SequentialVectorTrait> {
 
 impl<V: SequentialVectorTrait> std::ops::Deref for SequentialVectorWrapper<V> {
     type Target = V;
+    #[inline(always)]
     fn deref(&self) -> &Self::Target {
         &self.object
     }
 }
 
 impl<V: SequentialVectorTrait> std::ops::DerefMut for SequentialVectorWrapper<V> {
+    #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.object
     }
@@ -44,8 +48,9 @@ impl<V: SequentialVectorTrait> std::fmt::Debug for SequentialVectorWrapper<V> {
 }
 
 impl<V: SequentialMutVectorTrait> SequentialVectorWrapper<V> {
-    pub fn from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-        Self { object: V::from_iter(dimension, nonzero_elements) }
+    #[inline(always)]
+    pub fn generate_from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
+        Self { object: V::generate_from_iter(dimension, nonzero_elements) }
     }
 }
 
@@ -80,12 +85,14 @@ pub struct RandomVectorWrapper<V: RandomVectorTrait> {
 
 impl<V: RandomVectorTrait> std::ops::Deref for RandomVectorWrapper<V> {
     type Target = V;
+    #[inline(always)]
     fn deref(&self) -> &Self::Target {
         &self.object
     }
 }
 
 impl<V: RandomVectorTrait> std::ops::DerefMut for RandomVectorWrapper<V> {
+    #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.object
     }
@@ -98,8 +105,9 @@ impl<V: RandomVectorTrait> std::fmt::Debug for RandomVectorWrapper<V> {
 }
 
 impl<V: RandomVectorTrait + SequentialMutVectorTrait> RandomVectorWrapper<V> {
+    #[inline(always)]
     pub fn from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-        Self { object: V::from_iter(dimension, nonzero_elements) }
+        Self { object: V::generate_from_iter(dimension, nonzero_elements) }
     }
 }
 
@@ -190,6 +198,7 @@ pub type CompressedVector = SequentialVectorWrapper<impls::CompressedVector>;
 pub type UnitVector = RandomVectorWrapper<impls::UnitVector>;
 
 impl UnitVector {
+    #[inline(always)]
     pub fn new(dimension: usize, nonzero_index: usize) -> Self {
         Self { object: impls::UnitVector::new(dimension, nonzero_index) }
     }

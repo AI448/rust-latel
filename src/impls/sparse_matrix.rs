@@ -1,4 +1,5 @@
 use crate::{
+    traits::SequentialMutMatrixTrait,
     types::{Direction, COLUMN, ROW, ZERO},
     ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait,
 };
@@ -39,31 +40,20 @@ pub struct SparseMatrix {
     headers: [Vec<Header>; 2],
 }
 
-impl SparseMatrix {
-    pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
-        let mut matrix = Self {
-            hash_map: HashMap::default(),
-            headers: [ROW, COLUMN]
-                .map(|d| Vec::from_iter(std::iter::repeat_with(|| Header::default()).take(dimension[d]))),
-        };
-        for (ij, x) in nonzero_elements {
-            matrix[ij] = x;
-        }
-        return matrix;
-    }
-
-    pub fn replace<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
+impl SequentialMutMatrixTrait for SparseMatrix {
+    fn replace_by_iter<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
         for d in [ROW, COLUMN] {
             self.headers[d].clear();
             self.headers[d].resize_with(dimension[d], || Header::default());
         }
         self.hash_map.clear();
-
         for (ij, x) in nonzero_elements {
             self[ij] = x;
         }
     }
+}
 
+impl SparseMatrix {
     pub fn remove(&mut self, ij: [usize; 2]) {
         if let Some(item) = self.hash_map.remove(&ij) {
             let pointer = item.get();

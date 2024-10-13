@@ -1,6 +1,9 @@
 use crate::{
-    traits::{ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait},
-    types::{Transposed, COLUMN, ROW},
+    traits::{
+        ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait,
+        SequentialVectorTrait,
+    },
+    types::Transposed,
 };
 
 use super::crs_matrix::CRSMatrix;
@@ -10,18 +13,10 @@ pub struct CCSMatrix {
     crs_matrix: CRSMatrix,
 }
 
-impl CCSMatrix {
-    pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
-        Self {
-            crs_matrix: CRSMatrix::new(
-                [dimension[COLUMN], dimension[ROW]],
-                nonzero_elements.map(|([i, j], x)| ([j, i], x)),
-            ),
-        }
-    }
-
-    pub fn replace<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
-        self.crs_matrix.replace(dimension.transposed(), nonzero_elements.map(|([i, j], x)| ([j, i], x)));
+impl SequentialMutMatrixTrait for CCSMatrix {
+    fn replace_by_iter<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
+        self.crs_matrix
+            .replace_by_iter(dimension.transposed(), nonzero_elements.map(|([i, j], x)| ([j, i], x)));
     }
 }
 

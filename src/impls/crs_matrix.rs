@@ -1,7 +1,7 @@
 use fxhash::FxHashMap as HashMap;
 
 use crate::{
-    traits::{MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait},
+    traits::{MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait, SequentialVectorTrait},
     types::{COLUMN, ROW},
 };
 
@@ -15,14 +15,8 @@ pub struct CRSMatrix {
     values: Vec<f64>,
 }
 
-impl CRSMatrix {
-    pub fn new<I: Iterator<Item = ([usize; 2], f64)>>(dimension: [usize; 2], nonzero_elements: I) -> Self {
-        let mut matrix = Self::default();
-        matrix.replace(dimension, nonzero_elements);
-        return matrix;
-    }
-
-    pub fn replace<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
+impl SequentialMutMatrixTrait for CRSMatrix {
+    fn replace_by_iter<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
         let mut buffer = HashMap::default();
         for ([i, j], x) in nonzero_elements {
             assert!(i < dimension[ROW]);

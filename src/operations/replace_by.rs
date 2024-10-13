@@ -1,7 +1,9 @@
 use crate::traits::{
-    RandomMutVectorTrait, RandomVectorTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait,
+    RandomMutVectorTrait, RandomVectorTrait, SequentialMutMatrixTrait, SequentialMutVectorTrait, SequentialVectorTrait,
+    VectorTrait,
 };
-use crate::wrappers::{RandomVectorWrapper, SequentialVectorWrapper, VectorWrapper};
+use crate::wrappers::{BidirectionalMatrix, RandomVectorWrapper, SequentialVectorWrapper, VectorWrapper};
+use crate::{ColumnMatrix, ColumnMatrixTrait, RowMatrix, RowMatrixTrait, SequentialMatrix, SequentialMatrixTrait};
 
 pub trait ReplaceBy<R> {
     fn replace_by(&mut self, rhs: R);
@@ -49,6 +51,103 @@ impl_replace_by_using_replace_by_iter!(
     RandomMutVectorTrait + SequentialMutVectorTrait,
     RandomVectorWrapper,
     RandomVectorTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    SequentialMatrix,
+    SequentialMutMatrixTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(SequentialMatrix, SequentialMutMatrixTrait, RowMatrix, RowMatrixTrait);
+
+impl_replace_by_using_replace_by_iter!(SequentialMatrix, SequentialMutMatrixTrait, ColumnMatrix, ColumnMatrixTrait);
+
+impl_replace_by_using_replace_by_iter!(
+    SequentialMatrix,
+    SequentialMutMatrixTrait,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    ColumnMatrix,
+    ColumnMatrixTrait + SequentialMutMatrixTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    ColumnMatrix,
+    ColumnMatrixTrait + SequentialMutMatrixTrait,
+    RowMatrix,
+    RowMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    ColumnMatrix,
+    ColumnMatrixTrait + SequentialMutMatrixTrait,
+    ColumnMatrix,
+    ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    ColumnMatrix,
+    ColumnMatrixTrait + SequentialMutMatrixTrait,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    RowMatrix,
+    RowMatrixTrait + SequentialMutMatrixTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(RowMatrix, RowMatrixTrait + SequentialMutMatrixTrait, RowMatrix, RowMatrixTrait);
+
+impl_replace_by_using_replace_by_iter!(
+    RowMatrix,
+    RowMatrixTrait + SequentialMutMatrixTrait,
+    ColumnMatrix,
+    ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    RowMatrix,
+    RowMatrixTrait + SequentialMutMatrixTrait,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait + SequentialMutMatrixTrait,
+    SequentialMatrix,
+    SequentialMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait + SequentialMutMatrixTrait,
+    RowMatrix,
+    RowMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait + SequentialMutMatrixTrait,
+    ColumnMatrix,
+    ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait + SequentialMutMatrixTrait,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait
 );
 
 impl<L: RandomMutVectorTrait, R: VectorTrait> ReplaceBy<VectorWrapper<R>> for RandomVectorWrapper<L> {
