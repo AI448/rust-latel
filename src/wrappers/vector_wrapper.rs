@@ -112,7 +112,7 @@ impl<V: RandomVectorTrait> std::fmt::Debug for RandomVectorWrapper<V> {
 
 impl<V: RandomVectorTrait + SequentialMutVectorTrait> RandomVectorWrapper<V> {
     #[inline(always)]
-    pub fn from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
+    pub fn generate_from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         Self { object: V::generate_from_iter(dimension, nonzero_elements) }
     }
 }
