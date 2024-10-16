@@ -2,7 +2,7 @@ use latel::{GenerateFrom, SequentialVectorTrait, SparseVector};
 
 #[test]
 fn test() {
-    let x = SparseVector::from_iter(3, [(0, 0.0), (1, 1.0), (2, 2.0)].into_iter());
+    let x = SparseVector::generate_from_iter(3, [(0, 0.0), (1, 1.0), (2, 2.0)].into_iter());
     assert!(x[0] == 0.0);
     assert!(x[1] == 1.0);
     assert!(x[2] == 2.0);

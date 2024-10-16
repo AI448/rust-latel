@@ -4,7 +4,7 @@ use latel::{DenseVector, FullPermutator, GenerateFrom, SequentialVectorTrait};
 fn test() {
     let mut p = FullPermutator::generate_from_iter([3, 3], [].into_iter());
     p.set(0, 1);
-    let v = DenseVector::from_iter(3, [(1, 1.0), (2, 2.0)].into_iter());
+    let v = DenseVector::generate_from_iter(3, [(1, 1.0), (2, 2.0)].into_iter());
     dbg!(&v);
     // 置換してついでにスカラー倍してみる
     let x = 10.0 * (&p * &v);
