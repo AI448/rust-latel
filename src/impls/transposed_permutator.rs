@@ -27,4 +27,9 @@ impl<P: PermutatorTrait> PermutatorTrait for TransposedPermutator<P> {
     fn unpermutate(&self, i: usize) -> Option<usize> {
         self.permutator.permutate(i)
     }
+
+    #[inline(always)]
+    fn iter(&self) -> impl Iterator<Item=(usize, usize)> + Clone + '_ {
+        self.permutator.iter().map(|(from, to)| (to, from))
+    }
 }

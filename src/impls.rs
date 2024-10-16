@@ -33,4 +33,4 @@ pub(crate) use sparse_vector::SparseVector;
 pub(crate) use transposed_matrix::TransposedMatrix;
 pub(crate) use transposed_permutator::TransposedPermutator;
 pub(crate) use unit_vector::UnitVector;
-pub(crate) use vector_view::VectorView;
+pub use vector_view::VectorView;

@@ -1,4 +1,4 @@
-use crate::traits::PermutatorTrait;
+use crate::traits::{MutPermutatorTrait, PermutatorTrait};
 use crate::types::{COLUMN, NULL_INDEX, ROW};
 
 #[derive(Default, Clone, Debug)]
@@ -8,13 +8,13 @@ pub struct FullPermutator {
 }
 
 impl FullPermutator {
-    pub fn new(dimension: [usize; 2]) -> Self {
-        let k = *dimension.iter().min().unwrap();
-        Self {
-            permutations: Vec::from_iter((0..k).chain(std::iter::repeat_n(NULL_INDEX, dimension[COLUMN] - k))),
-            unpermutations: Vec::from_iter((0..k).chain(std::iter::repeat_n(NULL_INDEX, dimension[ROW] - k))),
-        }
-    }
+    // pub fn new(dimension: [usize; 2]) -> Self {
+    //     let k = *dimension.iter().min().unwrap();
+    //     Self {
+    //         permutations: Vec::from_iter((0..k).chain(std::iter::repeat_n(NULL_INDEX, dimension[COLUMN] - k))),
+    //         unpermutations: Vec::from_iter((0..k).chain(std::iter::repeat_n(NULL_INDEX, dimension[ROW] - k))),
+    //     }
+    // }
 
     #[inline(always)]
     pub fn set(&mut self, from: usize, to: usize) {
@@ -54,6 +54,24 @@ impl PermutatorTrait for FullPermutator {
             return Some(j);
         } else {
             return None;
+        }
+    }
+
+    #[inline(always)]
+    fn iter(&self) -> impl Iterator<Item=(usize, usize)> + Clone + '_ {
+        self.permutations.iter().cloned().enumerate().filter(|(_, to)| *to != NULL_INDEX)
+    }
+}
+
+impl MutPermutatorTrait for FullPermutator {
+    fn replace_by_iter<I: Iterator<Item = (usize, usize)>>(&mut self, dimension: [usize; 2], permutations: I) {
+        self.permutations.clear();
+        self.unpermutations.clear();
+        let k = *dimension.iter().min().unwrap();
+        self.permutations.extend((0..k).chain(std::iter::repeat_n(NULL_INDEX, dimension[COLUMN] - k)));
+        self.unpermutations.extend((0..k).chain(std::iter::repeat_n(NULL_INDEX, dimension[ROW] - k)));
+        for (from, to) in permutations {
+            self.set(from, to);
         }
     }
 }

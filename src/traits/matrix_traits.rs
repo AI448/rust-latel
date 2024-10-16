@@ -1,4 +1,3 @@
-use super::SequentialVectorTrait;
 
 pub trait MatrixTrait {
     fn dimension(&self) -> [usize; 2];
@@ -13,12 +12,12 @@ pub trait SequentialMatrixTrait: MatrixTrait {
 
 /// 行にランダムアクセス可能な行列
 pub trait RowMatrixTrait: SequentialMatrixTrait {
-    fn row(&self, i: usize) -> impl SequentialVectorTrait + '_;
+    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_;
 }
 
 /// 列にランダムアクセス可能な行列
 pub trait ColumnMatrixTrait: SequentialMatrixTrait {
-    fn column(&self, j: usize) -> impl SequentialVectorTrait + '_;
+    fn iter_column(&self, j: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_;
 }
 
 /// 変更可能な行列
@@ -45,13 +44,13 @@ impl<M: SequentialMatrixTrait> SequentialMatrixTrait for &M {
 }
 
 impl<M: RowMatrixTrait> RowMatrixTrait for &M {
-    fn row(&self, i: usize) -> impl SequentialVectorTrait + '_ {
-        (*self).row(i)
+    fn iter_row(&self, i: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
+        (*self).iter_row(i)
     }
 }
 
 impl<M: ColumnMatrixTrait> ColumnMatrixTrait for &M {
-    fn column(&self, j: usize) -> impl SequentialVectorTrait + '_ {
-        (*self).column(j)
+    fn iter_column(&self, j: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
+        (*self).iter_column(j)
     }
 }

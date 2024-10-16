@@ -37,4 +37,11 @@ impl<P1: PermutatorTrait, P2: PermutatorTrait> PermutatorTrait for PermutatedPer
             None
         }
     }
+
+    #[inline(always)]
+    fn iter(&self) -> impl Iterator<Item=(usize, usize)> + Clone + '_ {
+        self.permutator2.iter().filter_map(
+            |(from, to1)| self.permutator1.permutate(to1).map(|to2|(from, to2))
+        )
+    }
 }

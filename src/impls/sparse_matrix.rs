@@ -1,12 +1,10 @@
 use crate::{
     traits::SequentialMutMatrixTrait,
     types::{Direction, COLUMN, ROW, ZERO},
-    ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialVectorTrait,
+    ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait,
 };
 use fxhash::FxHashMap as HashMap;
 use std::{cell::UnsafeCell, ptr::NonNull};
-
-use super::VectorView;
 
 #[derive(Clone, Debug)]
 struct Link {
@@ -186,15 +184,15 @@ impl SequentialMatrixTrait for SparseMatrix {
 
 impl RowMatrixTrait for SparseMatrix {
     #[inline(always)]
-    fn row(&self, i: usize) -> impl SequentialVectorTrait + '_ {
-        VectorView::new(self.headers[ROW].len(), Iter::<{ ROW }>::new(&self, i))
+    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+        Iter::<{ ROW }>::new(&self, i)
     }
 }
 
 impl ColumnMatrixTrait for SparseMatrix {
     #[inline(always)]
-    fn column(&self, j: usize) -> impl SequentialVectorTrait + '_ {
-        VectorView::new(self.headers[COLUMN].len(), Iter::<{ COLUMN }>::new(&self, j))
+    fn iter_column(&self, j: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+        Iter::<{ COLUMN }>::new(&self, j)
     }
 }
 

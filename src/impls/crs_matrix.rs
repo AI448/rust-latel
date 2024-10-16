@@ -1,11 +1,9 @@
 use fxhash::FxHashMap as HashMap;
 
 use crate::{
-    traits::{MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait, SequentialVectorTrait},
+    traits::{MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait},
     types::{COLUMN, ROW},
 };
-
-use super::VectorView;
 
 #[derive(Default, Clone, Debug)]
 pub struct CRSMatrix {
@@ -74,9 +72,9 @@ impl SequentialMatrixTrait for CRSMatrix {
 
 impl RowMatrixTrait for CRSMatrix {
     #[inline(always)]
-    fn row(&self, i: usize) -> impl SequentialVectorTrait + '_ {
+    fn iter_row(&self, i: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
         let from = self.row_positions[i as usize];
         let to = self.row_positions[i as usize + 1];
-        VectorView::new(self.column_dimension, (from..to).map(|k| (self.column_indices[k], self.values[k])))
+        (from..to).map(|k| (self.column_indices[k], self.values[k]))
     }
 }

@@ -26,6 +26,12 @@ pub struct SequentialVectorWrapper<V: SequentialVectorTrait> {
     pub(crate) object: V,
 }
 
+impl<V: SequentialVectorTrait> From<V> for SequentialVectorWrapper<V> {
+    fn from(vector_impl: V) -> Self {
+        Self {object: vector_impl}
+    }
+}
+
 impl<V: SequentialVectorTrait> std::ops::Deref for SequentialVectorWrapper<V> {
     type Target = V;
     #[inline(always)]

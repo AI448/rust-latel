@@ -1,5 +1,6 @@
 pub mod add_assign;
 pub mod binary_operation;
+pub mod from;
 pub mod generate_from;
 pub mod replace_by;
 

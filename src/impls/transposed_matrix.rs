@@ -28,14 +28,14 @@ impl<M: SequentialMatrixTrait> SequentialMatrixTrait for TransposedMatrix<M> {
 
 impl<M: ColumnMatrixTrait> RowMatrixTrait for TransposedMatrix<M> {
     #[inline(always)]
-    fn row(&self, i: usize) -> impl crate::SequentialVectorTrait + '_ {
-        self.matrix.column(i)
+    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+        self.matrix.iter_column(i)
     }
 }
 
 impl<M: RowMatrixTrait> ColumnMatrixTrait for TransposedMatrix<M> {
     #[inline(always)]
-    fn column(&self, j: usize) -> impl crate::SequentialVectorTrait + '_ {
-        self.matrix.row(j)
+    fn iter_column(&self, j: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+        self.matrix.iter_row(j)
     }
 }

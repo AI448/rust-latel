@@ -2,7 +2,7 @@ use latel::{DenseVector, FullPermutator, GenerateFrom, SequentialVectorTrait};
 
 #[test]
 fn test() {
-    let mut p = FullPermutator::new([3, 3]);
+    let mut p = FullPermutator::generate_from_iter([3, 3], [].into_iter());
     p.set(0, 1);
     let v = DenseVector::from_iter(3, [(1, 1.0), (2, 2.0)].into_iter());
     dbg!(&v);

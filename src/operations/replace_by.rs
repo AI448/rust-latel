@@ -3,7 +3,7 @@ use crate::traits::{
     VectorTrait,
 };
 use crate::wrappers::{BidirectionalMatrix, RandomVectorWrapper, SequentialVectorWrapper, VectorWrapper};
-use crate::{ColumnMatrix, ColumnMatrixTrait, RowMatrix, RowMatrixTrait, SequentialMatrix, SequentialMatrixTrait};
+use crate::{ColumnMatrix, ColumnMatrixTrait, MutPermutatorTrait, Permutator, PermutatorTrait, RowMatrix, RowMatrixTrait, SequentialMatrix, SequentialMatrixTrait};
 
 pub trait ReplaceBy<R> {
     fn replace_by(&mut self, rhs: R);
@@ -148,6 +148,13 @@ impl_replace_by_using_replace_by_iter!(
     RowMatrixTrait + ColumnMatrixTrait + SequentialMutMatrixTrait,
     BidirectionalMatrix,
     RowMatrixTrait + ColumnMatrixTrait
+);
+
+impl_replace_by_using_replace_by_iter!(
+    Permutator,
+    MutPermutatorTrait,
+    Permutator,
+    PermutatorTrait
 );
 
 impl<L: RandomMutVectorTrait, R: VectorTrait> ReplaceBy<VectorWrapper<R>> for RandomVectorWrapper<L> {

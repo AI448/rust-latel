@@ -2,7 +2,7 @@ use latel::{FullPermutator, SparseMatrix};
 
 #[test]
 fn test() {
-    let mut x = SparseMatrix::new([3, 3], [([0, 0], 1.0), ([1, 1], 1.1), ([2, 2], 2.2)].into_iter());
+    let mut x = SparseMatrix::generate_from_iter([3, 3], [([0, 0], 1.0), ([1, 1], 1.1), ([2, 2], 2.2)].into_iter());
     dbg!(&x);
     x[[0, 0]] = 0.0;
     dbg!(&x[[0, 0]]);
@@ -10,7 +10,7 @@ fn test() {
     dbg!(&x[[1, 2]]);
     dbg!(&x);
     {
-        let mut p = FullPermutator::new([3, 3]);
+        let mut p = FullPermutator::generate_from_iter([3, 3], [].into_iter());
         p.set(0, 1);
         // 置換行列を掛けてみる
         let y = &p * &x;

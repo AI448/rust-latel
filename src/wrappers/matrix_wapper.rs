@@ -84,7 +84,9 @@ impl<M: RowMatrixTrait> std::ops::DerefMut for RowMatrix<M> {
 impl<M: RowMatrixTrait> RowMatrix<M> {
     #[inline(always)]
     pub fn row(&self, i: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
-        SequentialVectorWrapper { object: self.object.row(i) }
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension()[COLUMN], self.object.iter_row(i))
+        }
     }
 
     #[inline(always)]
@@ -147,7 +149,9 @@ impl<M: ColumnMatrixTrait> std::ops::DerefMut for ColumnMatrix<M> {
 impl<M: ColumnMatrixTrait> ColumnMatrix<M> {
     #[inline(always)]
     pub fn column(&self, j: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
-        SequentialVectorWrapper { object: self.object.column(j) }
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension()[ROW], self.object.iter_column(j))
+        }
     }
 
     #[inline(always)]
@@ -192,6 +196,12 @@ pub struct BidirectionalMatrix<M: RowMatrixTrait + ColumnMatrixTrait> {
     pub(crate) object: M,
 }
 
+impl<M: RowMatrixTrait + ColumnMatrixTrait> From<M> for BidirectionalMatrix<M> {
+    fn from(matrix: M) -> Self {
+        Self {object: matrix}
+    }
+}
+
 impl<M: RowMatrixTrait + ColumnMatrixTrait> std::ops::Deref for BidirectionalMatrix<M> {
     type Target = M;
     #[inline(always)]
@@ -210,11 +220,15 @@ impl<M: RowMatrixTrait + ColumnMatrixTrait> std::ops::DerefMut for Bidirectional
 impl<M: RowMatrixTrait + ColumnMatrixTrait> BidirectionalMatrix<M> {
     #[inline(always)]
     pub fn row(&self, i: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
-        SequentialVectorWrapper { object: self.object.row(i) }
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension()[COLUMN], self.object.iter_row(i))
+        }
     }
     #[inline(always)]
     pub fn column(&self, j: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
-        SequentialVectorWrapper { object: self.object.column(j) }
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension()[ROW], self.object.iter_column(j))
+        }
     }
     #[inline(always)]
     #[allow(non_snake_case)]
