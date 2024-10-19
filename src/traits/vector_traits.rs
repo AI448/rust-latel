@@ -21,6 +21,15 @@ pub trait SequentialVectorTrait: VectorTrait {
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_;
 
     #[inline(always)]
+    fn estimated_number_of_nonzeros(&self) -> usize {
+        if let Some(size) = self.iter().size_hint().1 {
+            return usize::min(size, self.dimension());
+        } else {
+            return self.dimension();
+        }
+    }
+
+    #[inline(always)]
     fn norm(&self) -> f64 {
         // NOTE: 後で考える fma を使ったほうが高精度だったりするのだろうか
         self.iter().map(|(_, x)| x.powi(2)).sum::<f64>().sqrt()

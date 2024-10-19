@@ -58,7 +58,7 @@ impl PermutatorTrait for FullPermutator {
     }
 
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item=(usize, usize)> + Clone + '_ {
+    fn iter(&self) -> impl Iterator<Item = (usize, usize)> + Clone + '_ {
         self.permutations.iter().cloned().enumerate().filter(|(_, to)| *to != NULL_INDEX)
     }
 }

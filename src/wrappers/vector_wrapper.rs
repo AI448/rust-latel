@@ -28,7 +28,7 @@ pub struct SequentialVectorWrapper<V: SequentialVectorTrait> {
 
 impl<V: SequentialVectorTrait> From<V> for SequentialVectorWrapper<V> {
     fn from(vector_impl: V) -> Self {
-        Self {object: vector_impl}
+        Self { object: vector_impl }
     }
 }
 
@@ -57,6 +57,16 @@ impl<V: SequentialMutVectorTrait> SequentialVectorWrapper<V> {
     #[inline(always)]
     pub fn generate_from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         Self { object: V::generate_from_iter(dimension, nonzero_elements) }
+    }
+
+    #[inline(always)]
+    pub fn filter<'a>(
+        &'a self,
+        f: impl Fn(usize, f64) -> bool + Clone + 'a,
+    ) -> SequentialVectorWrapper<impl SequentialVectorTrait + 'a> {
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension(), self.object.iter().filter(move |&(i, x)| f(i, x))),
+        }
     }
 }
 

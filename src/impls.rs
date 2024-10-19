@@ -24,7 +24,13 @@ pub(crate) use crs_matrix::CRSMatrix;
 pub(crate) use dense_vector::DenseVector;
 pub(crate) use full_permutator::FullPermutator;
 pub(crate) use mapped_vector::MappedVector;
-pub(crate) use matrix_multiplied_vector::ColumnMatrixMultipliedVector;
+pub(crate) use matrix_multiplied_vector::{
+    BidirectionalMatrixMultipliedVector, ColumnMatrixMultipliedVector, RowMatrixMultipliedVector,
+};
+pub(crate) use operations::{
+    mul_random_vector_and_random_vector, mul_random_vector_and_sequential_vector,
+    mul_sequential_vector_and_random_vector,
+};
 pub(crate) use permutated_matrix::{ColumnPermutatedMatrix, RowPermutatedMatrix};
 pub(crate) use permutated_permutator::PermutatedPermutator;
 pub(crate) use permutated_vector::PermutatedVector;

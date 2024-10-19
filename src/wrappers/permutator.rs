@@ -8,7 +8,7 @@ pub struct Permutator<P: PermutatorTrait> {
 impl<P: MutPermutatorTrait> Permutator<P> {
     #[inline(always)]
     pub fn generate_from_iter<I: Iterator<Item = (usize, usize)>>(dimension: [usize; 2], permutations: I) -> Self {
-        Self {object: P::generate_from_iter(dimension, permutations)}
+        Self { object: P::generate_from_iter(dimension, permutations) }
     }
 }
 

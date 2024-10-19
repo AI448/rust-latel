@@ -85,7 +85,7 @@ impl<M: RowMatrixTrait> RowMatrix<M> {
     #[inline(always)]
     pub fn row(&self, i: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
         SequentialVectorWrapper {
-            object: impls::VectorView::new(self.object.dimension()[COLUMN], self.object.iter_row(i))
+            object: impls::VectorView::new(self.object.dimension()[COLUMN], self.object.iter_row(i)),
         }
     }
 
@@ -150,7 +150,7 @@ impl<M: ColumnMatrixTrait> ColumnMatrix<M> {
     #[inline(always)]
     pub fn column(&self, j: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
         SequentialVectorWrapper {
-            object: impls::VectorView::new(self.object.dimension()[ROW], self.object.iter_column(j))
+            object: impls::VectorView::new(self.object.dimension()[ROW], self.object.iter_column(j)),
         }
     }
 
@@ -198,7 +198,7 @@ pub struct BidirectionalMatrix<M: RowMatrixTrait + ColumnMatrixTrait> {
 
 impl<M: RowMatrixTrait + ColumnMatrixTrait> From<M> for BidirectionalMatrix<M> {
     fn from(matrix: M) -> Self {
-        Self {object: matrix}
+        Self { object: matrix }
     }
 }
 
@@ -221,13 +221,13 @@ impl<M: RowMatrixTrait + ColumnMatrixTrait> BidirectionalMatrix<M> {
     #[inline(always)]
     pub fn row(&self, i: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
         SequentialVectorWrapper {
-            object: impls::VectorView::new(self.object.dimension()[COLUMN], self.object.iter_row(i))
+            object: impls::VectorView::new(self.object.dimension()[COLUMN], self.object.iter_row(i)),
         }
     }
     #[inline(always)]
     pub fn column(&self, j: usize) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
         SequentialVectorWrapper {
-            object: impls::VectorView::new(self.object.dimension()[ROW], self.object.iter_column(j))
+            object: impls::VectorView::new(self.object.dimension()[ROW], self.object.iter_column(j)),
         }
     }
     #[inline(always)]

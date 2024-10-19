@@ -1,4 +1,3 @@
-
 pub trait MatrixTrait {
     fn dimension(&self) -> [usize; 2];
 }
@@ -44,13 +43,13 @@ impl<M: SequentialMatrixTrait> SequentialMatrixTrait for &M {
 }
 
 impl<M: RowMatrixTrait> RowMatrixTrait for &M {
-    fn iter_row(&self, i: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
+    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         (*self).iter_row(i)
     }
 }
 
 impl<M: ColumnMatrixTrait> ColumnMatrixTrait for &M {
-    fn iter_column(&self, j: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
+    fn iter_column(&self, j: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         (*self).iter_column(j)
     }
 }

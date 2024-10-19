@@ -5,7 +5,7 @@ pub trait PermutatorTrait {
 
     fn unpermutate(&self, i: usize) -> Option<usize>;
 
-    fn iter(&self) -> impl Iterator<Item=(usize, usize)> + Clone + '_;
+    fn iter(&self) -> impl Iterator<Item = (usize, usize)> + Clone + '_;
 }
 
 pub trait MutPermutatorTrait: PermutatorTrait + Default {
@@ -33,7 +33,7 @@ impl<P: PermutatorTrait> PermutatorTrait for &P {
         (*self).unpermutate(i)
     }
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item=(usize, usize)> + Clone + '_ {
+    fn iter(&self) -> impl Iterator<Item = (usize, usize)> + Clone + '_ {
         (*self).iter()
     }
 }

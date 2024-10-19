@@ -1,6 +1,6 @@
 use crate::impls::{
-    ColumnMatrixMultipliedVector, ColumnPermutatedMatrix, MappedVector, PermutatedPermutator, PermutatedVector,
-    RowPermutatedMatrix,
+    self, BidirectionalMatrixMultipliedVector, ColumnMatrixMultipliedVector, ColumnPermutatedMatrix, MappedVector,
+    PermutatedPermutator, PermutatedVector, RowMatrixMultipliedVector, RowPermutatedMatrix,
 };
 use crate::traits::{
     ColumnMatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
@@ -242,30 +242,12 @@ impl_nonscalar_scalar_binary_operation!(
 
 // Vector * Vector
 
-fn mul_random_vector_and_sequential_vector(lhs: &impl RandomVectorTrait, rhs: &impl SequentialVectorTrait) -> f64 {
-    let mut z = 0.0;
-    for (i, y) in rhs.iter() {
-        let x = lhs.get(i);
-        z = x.mul_add(y, z);
-    }
-    return z;
-}
-
-fn mul_sequential_vector_and_random_vector(lhs: &impl SequentialVectorTrait, rhs: &impl RandomVectorTrait) -> f64 {
-    let mut z = 0.0;
-    for (i, x) in lhs.iter() {
-        let y = rhs.get(i);
-        z = x.mul_add(y, z);
-    }
-    return z;
-}
-
 impl<U: RandomVectorTrait, V: SequentialVectorTrait> std::ops::Mul<&SequentialVectorWrapper<V>>
     for &RandomVectorWrapper<U>
 {
     type Output = f64;
     fn mul(self, rhs: &SequentialVectorWrapper<V>) -> Self::Output {
-        mul_random_vector_and_sequential_vector(&self.object, &rhs.object)
+        impls::mul_random_vector_and_sequential_vector(&self.object, &rhs.object)
     }
 }
 
@@ -274,18 +256,14 @@ impl<U: SequentialVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVector
 {
     type Output = f64;
     fn mul(self, rhs: &RandomVectorWrapper<V>) -> Self::Output {
-        mul_sequential_vector_and_random_vector(&self.object, &rhs.object)
+        impls::mul_sequential_vector_and_random_vector(&self.object, &rhs.object)
     }
 }
 
 impl<U: RandomVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVectorWrapper<V>> for &RandomVectorWrapper<U> {
     type Output = f64;
     fn mul(self, rhs: &RandomVectorWrapper<V>) -> Self::Output {
-        if self.iter().size_hint().0 <= rhs.iter().size_hint().0 {
-            mul_sequential_vector_and_random_vector(&self.object, &rhs.object)
-        } else {
-            mul_random_vector_and_sequential_vector(&self.object, &rhs.object)
-        }
+        impls::mul_random_vector_and_random_vector(&self.object, &rhs.object)
     }
 }
 
@@ -432,6 +410,7 @@ impl_nonscalar_nonscalar_binary_operation!(
     |matrix, permutator| ColumnPermutatedMatrix::new(matrix, permutator)
 );
 
+// ColumnMatrix * SequentialVector -> Vector
 impl_nonscalar_nonscalar_binary_operation!(
     Mul,
     mul,
@@ -444,6 +423,7 @@ impl_nonscalar_nonscalar_binary_operation!(
     |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
 );
 
+// ColumnMatrix * SequentialVector -> Vector
 impl_nonscalar_nonscalar_binary_operation!(
     Mul,
     mul,
@@ -454,4 +434,30 @@ impl_nonscalar_nonscalar_binary_operation!(
     VectorWrapper,
     VectorTrait,
     |matrix, vector| ColumnMatrixMultipliedVector::new(matrix, vector)
+);
+
+// RowMatrix * RandomVector -> Vector
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    RowMatrix,
+    RowMatrixTrait,
+    RandomVectorWrapper,
+    RandomVectorTrait,
+    VectorWrapper,
+    VectorTrait,
+    |matrix, vector| RowMatrixMultipliedVector::new(matrix, vector)
+);
+
+// RowMatrix * RandomVector -> Vector
+impl_nonscalar_nonscalar_binary_operation!(
+    Mul,
+    mul,
+    BidirectionalMatrix,
+    RowMatrixTrait + ColumnMatrixTrait,
+    RandomVectorWrapper,
+    RandomVectorTrait,
+    VectorWrapper,
+    VectorTrait,
+    |matrix, vector| BidirectionalMatrixMultipliedVector::new(matrix, vector)
 );

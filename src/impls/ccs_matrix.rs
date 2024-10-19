@@ -1,7 +1,5 @@
 use crate::{
-    traits::{
-        ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait,
-    },
+    traits::{ColumnMatrixTrait, MatrixTrait, RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait},
     types::Transposed,
 };
 
@@ -35,7 +33,7 @@ impl SequentialMatrixTrait for CCSMatrix {
 
 impl ColumnMatrixTrait for CCSMatrix {
     #[inline(always)]
-    fn iter_column(&self, j: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
+    fn iter_column(&self, j: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         self.crs_matrix.iter_row(j)
     }
 }

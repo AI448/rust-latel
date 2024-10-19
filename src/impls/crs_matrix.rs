@@ -13,6 +13,12 @@ pub struct CRSMatrix {
     values: Vec<f64>,
 }
 
+impl CRSMatrix {
+    pub fn estimated_number_of_nonzeros(&self) -> usize {
+        self.column_indices.len()
+    }
+}
+
 impl SequentialMutMatrixTrait for CRSMatrix {
     fn replace_by_iter<I: Iterator<Item = ([usize; 2], f64)>>(&mut self, dimension: [usize; 2], nonzero_elements: I) {
         let mut buffer = HashMap::default();
@@ -72,7 +78,7 @@ impl SequentialMatrixTrait for CRSMatrix {
 
 impl RowMatrixTrait for CRSMatrix {
     #[inline(always)]
-    fn iter_row(&self, i: usize) -> impl Iterator<Item=(usize, f64)> + Clone + '_ {
+    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
         let from = self.row_positions[i as usize];
         let to = self.row_positions[i as usize + 1];
         (from..to).map(|k| (self.column_indices[k], self.values[k]))

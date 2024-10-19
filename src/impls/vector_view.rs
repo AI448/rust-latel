@@ -14,10 +14,10 @@ impl<I: Iterator<Item = (usize, f64)> + Clone> VectorView<I> {
         Self { dimension: dimension, iterator: Some(nonzero_elements) }
     }
 
-    #[inline(always)]
-    pub fn new_as_empry(dimension: usize) -> Self {
-        Self {dimension: dimension, iterator: None}
-    }
+    // #[inline(always)]
+    // pub fn new_as_empry(dimension: usize) -> Self {
+    //     Self { dimension: dimension, iterator: None }
+    // }
 }
 
 impl<I: Iterator<Item = (usize, f64)> + Clone> VectorTrait for VectorView<I> {
@@ -42,14 +42,14 @@ impl<I: Iterator<Item = (usize, f64)> + Clone> VectorTrait for VectorView<I> {
 impl<I: Iterator<Item = (usize, f64)> + Clone> SequentialVectorTrait for VectorView<I> {
     #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
-        Iter {iterator: self.iterator.clone()}
+        Iter { iterator: self.iterator.clone() }
         // self.iterator.clone().iter()
     }
 }
 
 #[derive(Clone, Debug)]
 struct Iter<I: Iterator<Item = (usize, f64)> + Clone> {
-    iterator: Option<I>
+    iterator: Option<I>,
 }
 
 impl<I: Iterator<Item = (usize, f64)> + Clone> Iterator for Iter<I> {
@@ -58,7 +58,7 @@ impl<I: Iterator<Item = (usize, f64)> + Clone> Iterator for Iter<I> {
     fn next(&mut self) -> Option<Self::Item> {
         match &mut self.iterator {
             Some(iterator) => iterator.next(),
-            None => None
+            None => None,
         }
     }
     #[inline(always)]

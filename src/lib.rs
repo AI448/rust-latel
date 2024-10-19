@@ -10,16 +10,17 @@ mod types;
 mod wrappers;
 
 // pub use io::{random_vector_to_json, sequential_vector_to_json};
+pub use impls::VectorView;
 pub use traits::{
-    ColumnMatrixTrait, MatrixTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait, RowMatrixTrait,
-    SequentialMatrixTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait, SequentialMutMatrixTrait, MutPermutatorTrait,
+    ColumnMatrixTrait, MatrixTrait, MutPermutatorTrait, PermutatorTrait, RandomMutVectorTrait, RandomVectorTrait,
+    RowMatrixTrait, SequentialMatrixTrait, SequentialMutMatrixTrait, SequentialMutVectorTrait, SequentialVectorTrait,
+    VectorTrait,
 };
 pub use types::Direction::{self, COLUMN, ROW};
-pub use impls::VectorView;
 pub use wrappers::{
-    CCSMatrix, CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector, FullPermutator, Permutator,
-    RandomVectorWrapper, RowMatrix, SequentialMatrix, SequentialVectorWrapper, SparseMatrix, SparseVector, UnitVector,
-    VectorWrapper, BidirectionalMatrix
+    BidirectionalMatrix, CCSMatrix, CRSMatrix, ColumnMatrix, CompressedMatrix, CompressedVector, DenseVector,
+    FullPermutator, Permutator, RandomVectorWrapper, RowMatrix, SequentialMatrix, SequentialVectorWrapper,
+    SparseMatrix, SparseVector, UnitVector, VectorWrapper,
 };
 
 pub use operations::{GenerateFrom, ReplaceBy};
