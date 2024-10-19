@@ -125,6 +125,16 @@ impl<V: RandomVectorTrait + SequentialMutVectorTrait> RandomVectorWrapper<V> {
     pub fn generate_from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         Self { object: V::generate_from_iter(dimension, nonzero_elements) }
     }
+
+    #[inline(always)]
+    pub fn filter<'a>(
+        &'a self,
+        f: impl Fn(usize, f64) -> bool + Clone + 'a,
+    ) -> SequentialVectorWrapper<impl SequentialVectorTrait + 'a> {
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension(), self.object.iter().filter(move |&(i, x)| f(i, x))),
+        }
+    }
 }
 
 // impl<L: RandomMutVectorTrait, R: VectorTrait> From<&VectorWrapper<R>> for RandomVectorWrapper<L> {
