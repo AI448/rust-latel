@@ -12,6 +12,7 @@ pub struct MappedVector<F: Fn(f64) -> f64, V: SequentialVectorTrait> {
 }
 
 impl<F: Fn(f64) -> f64, V: SequentialVectorTrait> MappedVector<F, V> {
+    #[inline(always)]
     pub fn new(functor: F, vector: V) -> Self {
         return Self { functor: functor, vector: vector };
     }
@@ -38,7 +39,7 @@ impl<F: Fn(f64) -> f64, V: SequentialVectorTrait> VectorTrait for MappedVector<F
 
 impl<F: Fn(f64) -> f64, V: SequentialVectorTrait> SequentialVectorTrait for MappedVector<F, V> {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         self.vector.iter().map(|(i, x)| (i, (self.functor)(x)))
     }
 }

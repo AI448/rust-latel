@@ -26,6 +26,13 @@ pub struct SequentialVectorWrapper<V: SequentialVectorTrait> {
     pub(crate) object: V,
 }
 
+impl<V: SequentialVectorTrait> SequentialVectorWrapper<V> {
+    #[inline(always)]
+    pub fn rev(&self) -> SequentialVectorWrapper<impl SequentialVectorTrait + '_> {
+        SequentialVectorWrapper { object: impls::VectorView::new(self.object.dimension(), self.object.iter().rev()) }
+    }
+}
+
 impl<V: SequentialVectorTrait> From<V> for SequentialVectorWrapper<V> {
     fn from(vector_impl: V) -> Self {
         Self { object: vector_impl }

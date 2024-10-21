@@ -18,7 +18,7 @@ pub trait VectorTrait {
 /// シーケンシャルアクセス可能なベクトル
 pub trait SequentialVectorTrait: VectorTrait {
     /// 非ゼロ要素の添字と値の組のイテレータ
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_;
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_;
 
     #[inline(always)]
     fn estimated_number_of_nonzeros(&self) -> usize {
@@ -30,9 +30,17 @@ pub trait SequentialVectorTrait: VectorTrait {
     }
 
     #[inline(always)]
+    fn norm2(&self) -> f64 {
+        let mut y = 0.0;
+        for (_, x) in self.iter() {
+            y = f64::mul_add(x, x, y);
+        }
+        return y;
+    }
+
+    #[inline(always)]
     fn norm(&self) -> f64 {
-        // NOTE: 後で考える fma を使ったほうが高精度だったりするのだろうか
-        self.iter().map(|(_, x)| x.powi(2)).sum::<f64>().sqrt()
+        return self.norm2().sqrt();
     }
 }
 
@@ -86,7 +94,7 @@ impl<V: VectorTrait> VectorTrait for &V {
 
 impl<V: SequentialVectorTrait> SequentialVectorTrait for &V {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         (*self).iter()
     }
 }

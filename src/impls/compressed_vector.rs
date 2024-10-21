@@ -56,7 +56,7 @@ impl VectorTrait for CompressedVector {
 
 impl SequentialVectorTrait for CompressedVector {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         self.indices.iter().cloned().zip(self.values.iter().cloned())
     }
 }

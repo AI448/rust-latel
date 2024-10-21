@@ -1,6 +1,6 @@
 use crate::impls::{
     self, BidirectionalMatrixMultipliedVector, ColumnMatrixMultipliedVector, ColumnPermutatedMatrix, MappedVector,
-    PermutatedPermutator, PermutatedVector, RowMatrixMultipliedVector, RowPermutatedMatrix,
+    PermutatedPermutator, PermutatedVector, RowMatrixMultipliedVector, RowPermutatedMatrix, ScalarMultipledVector,
 };
 use crate::traits::{
     ColumnMatrixTrait, PermutatorTrait, RandomVectorTrait, RowMatrixTrait, SequentialMatrixTrait,
@@ -182,7 +182,7 @@ impl_scalar_nonscalar_binary_operation!(
     SequentialVectorTrait,
     SequentialVectorWrapper,
     SequentialVectorTrait,
-    |lhs, rhs| MappedVector::new(move |x| lhs * x, rhs)
+    |lhs, rhs| ScalarMultipledVector::new(lhs, rhs) // |lhs, rhs| MappedVector::new(move |x| lhs * x, rhs)
 );
 
 // Scalar * RandomVector -> RandomVector
@@ -193,7 +193,7 @@ impl_scalar_nonscalar_binary_operation!(
     RandomVectorTrait,
     RandomVectorWrapper,
     RandomVectorTrait,
-    |lhs, rhs| MappedVector::new(move |x| lhs * x, rhs)
+    |lhs, rhs| ScalarMultipledVector::new(lhs, rhs) // |lhs, rhs| MappedVector::new(move |x| lhs * x, rhs)
 );
 
 // SequentialVector * Scalar -> SequentialVector
@@ -204,7 +204,8 @@ impl_nonscalar_scalar_binary_operation!(
     SequentialVectorTrait,
     SequentialVectorWrapper,
     SequentialVectorTrait,
-    |vector, scalar| MappedVector::new(move |x| x * scalar, vector)
+    |lhs, rhs| ScalarMultipledVector::new(rhs, lhs) // NOTE: 掛け算が可換であることを仮定している
+                                                    // |lhs, rhs| MappedVector::new(move |x| rhs * x, lhs)
 );
 
 // RandomVector * Scalar -> RandomVector
@@ -215,7 +216,8 @@ impl_nonscalar_scalar_binary_operation!(
     RandomVectorTrait,
     RandomVectorWrapper,
     RandomVectorTrait,
-    |vector, scalar| MappedVector::new(move |x| x * scalar, vector)
+    |lhs, rhs| ScalarMultipledVector::new(rhs, lhs) // NOTE: 掛け算が可換であることを仮定している
+                                                    // |lhs, rhs| MappedVector::new(move |x| rhs * x, lhs)
 );
 
 // SequentialVector / Scalar -> SequentialVector
@@ -246,6 +248,7 @@ impl<U: RandomVectorTrait, V: SequentialVectorTrait> std::ops::Mul<&SequentialVe
     for &RandomVectorWrapper<U>
 {
     type Output = f64;
+    #[inline(always)]
     fn mul(self, rhs: &SequentialVectorWrapper<V>) -> Self::Output {
         impls::mul_random_vector_and_sequential_vector(&self.object, &rhs.object)
     }
@@ -255,6 +258,7 @@ impl<U: SequentialVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVector
     for &SequentialVectorWrapper<U>
 {
     type Output = f64;
+    #[inline(always)]
     fn mul(self, rhs: &RandomVectorWrapper<V>) -> Self::Output {
         impls::mul_sequential_vector_and_random_vector(&self.object, &rhs.object)
     }
@@ -262,6 +266,7 @@ impl<U: SequentialVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVector
 
 impl<U: RandomVectorTrait, V: RandomVectorTrait> std::ops::Mul<&RandomVectorWrapper<V>> for &RandomVectorWrapper<U> {
     type Output = f64;
+    #[inline(always)]
     fn mul(self, rhs: &RandomVectorWrapper<V>) -> Self::Output {
         impls::mul_random_vector_and_random_vector(&self.object, &rhs.object)
     }

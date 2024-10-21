@@ -39,7 +39,7 @@ impl VectorTrait for UnitVector {
 
 impl SequentialVectorTrait for UnitVector {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         [(self.nonzero_index, 1.0)].into_iter()
     }
 }

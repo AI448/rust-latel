@@ -3,6 +3,7 @@ use crate::{
     COLUMN, ROW,
 };
 
+#[inline(always)]
 pub fn mul_random_vector_and_sequential_vector(lhs: &impl RandomVectorTrait, rhs: &impl SequentialVectorTrait) -> f64 {
     debug_assert!(lhs.dimension() == rhs.dimension());
     let mut x = 0.0;
@@ -13,6 +14,7 @@ pub fn mul_random_vector_and_sequential_vector(lhs: &impl RandomVectorTrait, rhs
     return x;
 }
 
+#[inline(always)]
 pub fn mul_sequential_vector_and_random_vector(lhs: &impl SequentialVectorTrait, rhs: &impl RandomVectorTrait) -> f64 {
     debug_assert!(lhs.dimension() == rhs.dimension());
     let mut x = 0.0;
@@ -23,6 +25,7 @@ pub fn mul_sequential_vector_and_random_vector(lhs: &impl SequentialVectorTrait,
     return x;
 }
 
+#[inline(always)]
 pub fn mul_random_vector_and_random_vector(lhs: &impl RandomVectorTrait, rhs: &impl RandomVectorTrait) -> f64 {
     debug_assert!(lhs.dimension() == rhs.dimension());
     if lhs.estimated_number_of_nonzeros() <= rhs.estimated_number_of_nonzeros() {
@@ -32,10 +35,12 @@ pub fn mul_random_vector_and_random_vector(lhs: &impl RandomVectorTrait, rhs: &i
     }
 }
 
+#[inline(always)]
 pub fn assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
     lhs.replace_by_iter(rhs.dimension(), rhs.iter());
 }
 
+#[inline(always)]
 pub fn add_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
     debug_assert!(lhs.dimension() == rhs.dimension());
     for (i, x) in rhs.iter() {
@@ -43,6 +48,7 @@ pub fn add_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &i
     }
 }
 
+#[inline(always)]
 pub fn sub_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
     debug_assert!(lhs.dimension() == rhs.dimension());
     for (i, x) in rhs.iter() {
@@ -50,6 +56,7 @@ pub fn sub_assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &i
     }
 }
 
+#[inline(always)]
 pub fn add_assign_scalar_multipled_sequential_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_scalar: f64,
@@ -61,6 +68,7 @@ pub fn add_assign_scalar_multipled_sequential_vector(
     }
 }
 
+#[inline(never)]
 pub fn assign_column_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &impl ColumnMatrixTrait,
@@ -72,6 +80,7 @@ pub fn assign_column_matrix_multiplied_vector(
     add_assign_column_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
 }
 
+#[inline(never)]
 pub fn add_assign_column_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &impl ColumnMatrixTrait,
@@ -85,6 +94,7 @@ pub fn add_assign_column_matrix_multiplied_vector(
     }
 }
 
+#[inline(never)]
 pub fn sub_assign_column_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &impl ColumnMatrixTrait,
@@ -98,6 +108,7 @@ pub fn sub_assign_column_matrix_multiplied_vector(
     }
 }
 
+#[inline(never)]
 pub fn assign_row_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &impl RowMatrixTrait,
@@ -108,6 +119,7 @@ pub fn assign_row_matrix_multiplied_vector(
     add_assign_row_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
 }
 
+#[inline(never)]
 pub fn add_assign_row_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &impl RowMatrixTrait,
@@ -124,6 +136,7 @@ pub fn add_assign_row_matrix_multiplied_vector(
     }
 }
 
+#[inline(never)]
 pub fn sub_assign_row_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &impl RowMatrixTrait,
@@ -140,6 +153,7 @@ pub fn sub_assign_row_matrix_multiplied_vector(
     }
 }
 
+#[inline(never)]
 pub fn assign_bidirectional_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &(impl RowMatrixTrait + ColumnMatrixTrait),
@@ -154,6 +168,7 @@ pub fn assign_bidirectional_matrix_multiplied_vector(
     }
 }
 
+#[inline(never)]
 pub fn add_assign_bidirectional_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &(impl RowMatrixTrait + ColumnMatrixTrait),
@@ -169,6 +184,7 @@ pub fn add_assign_bidirectional_matrix_multiplied_vector(
     }
 }
 
+#[inline(never)]
 pub fn sub_assign_bidirectional_matrix_multiplied_vector(
     lhs: &mut impl RandomMutVectorTrait,
     rhs_matrix: &(impl RowMatrixTrait + ColumnMatrixTrait),

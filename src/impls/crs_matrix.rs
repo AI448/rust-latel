@@ -69,8 +69,8 @@ impl SequentialMatrixTrait for CRSMatrix {
     #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = ([usize; 2], f64)> + Clone + '_ {
         (0..self.dimension()[ROW]).flat_map(move |i| {
-            let from = self.row_positions[i as usize];
-            let to = self.row_positions[i as usize + 1];
+            let from = self.row_positions[i];
+            let to = self.row_positions[i + 1];
             (from..to).map(move |k| ([i, self.column_indices[k]], self.values[k]))
         })
     }
@@ -78,9 +78,9 @@ impl SequentialMatrixTrait for CRSMatrix {
 
 impl RowMatrixTrait for CRSMatrix {
     #[inline(always)]
-    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
-        let from = self.row_positions[i as usize];
-        let to = self.row_positions[i as usize + 1];
+    fn iter_row(&self, i: usize) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
+        let from = self.row_positions[i];
+        let to = self.row_positions[i + 1];
         (from..to).map(|k| (self.column_indices[k], self.values[k]))
     }
 }

@@ -58,7 +58,7 @@ impl VectorTrait for DenseVector {
 
 impl SequentialVectorTrait for DenseVector {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         self.values.iter().cloned().enumerate()
     }
 }

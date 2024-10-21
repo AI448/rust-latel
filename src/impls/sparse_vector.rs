@@ -21,11 +21,12 @@ impl SparseVector {
     // }
 
     pub fn zero_clear(&mut self) {
-        while let Some(i) = self.nonzero_indices.pop() {
-            debug_assert!(self.flags[i]);
+        for &i in self.nonzero_indices.iter() {
+            debug_assert!(self.flags[i] == true);
             self.values[i] = 0.0;
             self.flags[i] = false;
         }
+        self.nonzero_indices.clear();
     }
 }
 
@@ -50,7 +51,7 @@ impl VectorTrait for SparseVector {
 
 impl SequentialVectorTrait for SparseVector {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         self.nonzero_indices.iter().map(|i| (*i, self.values[*i]))
     }
 }
@@ -65,8 +66,10 @@ impl RandomVectorTrait for SparseVector {
 impl SequentialMutVectorTrait for SparseVector {
     fn replace_by_iter<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I) {
         self.zero_clear();
-        self.values.resize(dimension, 0.0);
-        self.flags.resize(dimension, false);
+        if self.values.len() != dimension {
+            self.values.resize(dimension, 0.0);
+            self.flags.resize(dimension, false);
+        }
         for (i, x) in nonzero_elements {
             if x != 0.0 {
                 self.values[i] = x;

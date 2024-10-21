@@ -38,7 +38,7 @@ impl<P: PermutatorTrait, V: SequentialVectorTrait> VectorTrait for PermutatedVec
 
 impl<P: PermutatorTrait, V: SequentialVectorTrait> SequentialVectorTrait for PermutatedVector<P, V> {
     #[inline(always)]
-    fn iter(&self) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter(&self) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         self.vector.iter().filter_map(|(i1, x)| match self.permutator.permutate(i1) {
             Some(i2) => Some((i2, x)),
             None => None,

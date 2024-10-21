@@ -184,14 +184,14 @@ impl SequentialMatrixTrait for SparseMatrix {
 
 impl RowMatrixTrait for SparseMatrix {
     #[inline(always)]
-    fn iter_row(&self, i: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter_row(&self, i: usize) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         Iter::<{ ROW }>::new(&self, i)
     }
 }
 
 impl ColumnMatrixTrait for SparseMatrix {
     #[inline(always)]
-    fn iter_column(&self, j: usize) -> impl Iterator<Item = (usize, f64)> + Clone + '_ {
+    fn iter_column(&self, j: usize) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         Iter::<{ COLUMN }>::new(&self, j)
     }
 }
@@ -229,5 +229,19 @@ impl<'a, const D: Direction> std::iter::Iterator for Iter<'a, D> {
     fn size_hint(&self) -> (usize, Option<usize>) {
         let len = self.sparse_matrix.headers[D][self.index].len;
         return (len, Some(len));
+    }
+}
+
+impl<'a, const D: Direction> std::iter::DoubleEndedIterator for Iter<'a, D> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.current = match self.current {
+            None => self.sparse_matrix.headers[D][self.index].last,
+            Some(current) => unsafe { &*current.as_ptr() }.links[D].previous,
+        };
+        return self.current.as_ref().map(|&current| {
+            let item = unsafe { &*current.as_ptr() };
+            debug_assert!(item.indices[D] == self.index);
+            (item.indices[!D], item.value)
+        });
     }
 }

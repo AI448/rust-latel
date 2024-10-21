@@ -10,6 +10,7 @@ mod operations;
 mod permutated_matrix;
 mod permutated_permutator;
 mod permutated_vector;
+mod scalar_multiplied_vector;
 mod sparse_matrix;
 mod sparse_vector;
 mod transposed_matrix;
@@ -34,6 +35,7 @@ pub(crate) use operations::{
 pub(crate) use permutated_matrix::{ColumnPermutatedMatrix, RowPermutatedMatrix};
 pub(crate) use permutated_permutator::PermutatedPermutator;
 pub(crate) use permutated_vector::PermutatedVector;
+pub(crate) use scalar_multiplied_vector::ScalarMultipledVector;
 pub(crate) use sparse_matrix::SparseMatrix;
 pub(crate) use sparse_vector::SparseVector;
 pub(crate) use transposed_matrix::TransposedMatrix;
