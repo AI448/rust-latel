@@ -27,6 +27,7 @@ impl std::ops::Index<usize> for DenseVector {
     #[inline(always)]
     fn index(&self, index: usize) -> &Self::Output {
         &self.values[index]
+        // unsafe {self.values.get_unchecked(index)}
     }
 }
 
@@ -34,6 +35,7 @@ impl std::ops::IndexMut<usize> for DenseVector {
     #[inline(always)]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.values[index]
+        // unsafe {self.values.get_unchecked_mut(index)}
     }
 }
 

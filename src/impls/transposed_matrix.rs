@@ -7,6 +7,7 @@ pub struct TransposedMatrix<M: MatrixTrait> {
 }
 
 impl<M: MatrixTrait> TransposedMatrix<M> {
+    #[inline(always)]
     pub fn new(matrix: M) -> Self {
         Self { matrix: matrix }
     }

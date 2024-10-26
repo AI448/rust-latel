@@ -10,12 +10,14 @@ macro_rules! impl_from {
         $rhs_wrapper: ident, $rhs_trait1: ident $(+ $rhs_trait2: ident)*
     ) => {
         impl<V: $rhs_trait1 $(+ $rhs_trait2)*> From<$rhs_wrapper<V>> for $lhs_wrapper<V> {
+            #[inline(always)]
             fn from(rhs: $rhs_wrapper<V>) -> Self {
                 Self{ object: rhs.object }
             }
         }
 
         impl<'a, V: $rhs_trait1 $(+ $rhs_trait2)*> From<&'a $rhs_wrapper<V>> for $lhs_wrapper<&'a V> {
+            #[inline(always)]
             fn from(rhs: &'a $rhs_wrapper<V>) -> Self {
                 Self{ object: &rhs.object }
             }

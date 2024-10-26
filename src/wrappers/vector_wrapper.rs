@@ -1,4 +1,4 @@
-use crate::impls;
+use crate::{impls, VectorView};
 use crate::{RandomVectorTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait};
 
 #[derive(Default, Clone)]
@@ -34,6 +34,7 @@ impl<V: SequentialVectorTrait> SequentialVectorWrapper<V> {
 }
 
 impl<V: SequentialVectorTrait> From<V> for SequentialVectorWrapper<V> {
+    #[inline(always)]
     fn from(vector_impl: V) -> Self {
         Self { object: vector_impl }
     }
@@ -106,6 +107,15 @@ pub struct RandomVectorWrapper<V: RandomVectorTrait> {
     pub(crate) object: V,
 }
 
+impl<V: RandomVectorTrait> RandomVectorWrapper<V> {
+    pub fn filter<'a>(
+        &'a self,
+        f: impl Fn(usize, f64) -> bool + Clone + 'a,
+    ) -> SequentialVectorWrapper<impl SequentialVectorTrait + 'a> {
+        SequentialVectorWrapper{object: VectorView::new(self.object.dimension(), self.object.iter().filter(move |(j, x)| f(*j, *x)))}
+    }
+}
+
 impl<V: RandomVectorTrait> std::ops::Deref for RandomVectorWrapper<V> {
     type Target = V;
     #[inline(always)]
@@ -131,16 +141,6 @@ impl<V: RandomVectorTrait + SequentialMutVectorTrait> RandomVectorWrapper<V> {
     #[inline(always)]
     pub fn generate_from_iter<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
         Self { object: V::generate_from_iter(dimension, nonzero_elements) }
-    }
-
-    #[inline(always)]
-    pub fn filter<'a>(
-        &'a self,
-        f: impl Fn(usize, f64) -> bool + Clone + 'a,
-    ) -> SequentialVectorWrapper<impl SequentialVectorTrait + 'a> {
-        SequentialVectorWrapper {
-            object: impls::VectorView::new(self.object.dimension(), self.object.iter().filter(move |&(i, x)| f(i, x))),
-        }
     }
 }
 
