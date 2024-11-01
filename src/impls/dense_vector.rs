@@ -47,6 +47,7 @@ impl VectorTrait for DenseVector {
     #[inline(always)]
     fn assign_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {
         assign_sequential_vector(lhs, &self);
+        // TODO assign_random_vector
     }
     #[inline(always)]
     fn add_to_random_vector(&self, lhs: &mut impl crate::RandomMutVectorTrait) {

@@ -1,8 +1,10 @@
 mod ccs_matrix;
 mod compressed_matrix;
 mod compressed_vector;
+mod crcs_matrix;
 mod crs_matrix;
 mod dense_vector;
+mod diagonal_matrix;
 mod full_permutator;
 mod mapped_vector;
 mod matrix_multiplied_vector;
@@ -21,8 +23,10 @@ mod vector_view;
 pub(crate) use ccs_matrix::CCSMatrix;
 pub(crate) use compressed_matrix::CompressedMatrix;
 pub(crate) use compressed_vector::CompressedVector;
+pub(crate) use crcs_matrix::CRCSMatrix;
 pub(crate) use crs_matrix::CRSMatrix;
 pub(crate) use dense_vector::DenseVector;
+pub(crate) use diagonal_matrix::DiagonalMatrix;
 pub(crate) use full_permutator::FullPermutator;
 pub(crate) use mapped_vector::MappedVector;
 pub(crate) use matrix_multiplied_vector::{

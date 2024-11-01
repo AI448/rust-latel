@@ -31,24 +31,28 @@ pub trait SequentialMutMatrixTrait: SequentialMatrixTrait + Default {
 }
 
 impl<M: MatrixTrait> MatrixTrait for &M {
+    #[inline(always)]
     fn dimension(&self) -> [usize; 2] {
         (*self).dimension()
     }
 }
 
 impl<M: SequentialMatrixTrait> SequentialMatrixTrait for &M {
+    #[inline(always)]
     fn iter(&self) -> impl Iterator<Item = ([usize; 2], f64)> + Clone + '_ {
         (*self).iter()
     }
 }
 
 impl<M: RowMatrixTrait> RowMatrixTrait for &M {
+    #[inline(always)]
     fn iter_row(&self, i: usize) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         (*self).iter_row(i)
     }
 }
 
 impl<M: ColumnMatrixTrait> ColumnMatrixTrait for &M {
+    #[inline(always)]
     fn iter_column(&self, j: usize) -> impl DoubleEndedIterator<Item = (usize, f64)> + Clone + '_ {
         (*self).iter_column(j)
     }

@@ -272,6 +272,10 @@ pub type CRSMatrix = RowMatrix<impls::CRSMatrix>;
 
 pub type CCSMatrix = ColumnMatrix<impls::CCSMatrix>;
 
+pub type CRCSMatrix = BidirectionalMatrix<impls::CRCSMatrix>;
+
+pub type DiagonalMatrix = BidirectionalMatrix<impls::DiagonalMatrix>;
+
 pub type SparseMatrix = BidirectionalMatrix<impls::SparseMatrix>;
 
 fn debug_vector(f: &mut std::fmt::Formatter, matrix: &impl SequentialMatrixTrait) -> std::fmt::Result {

@@ -1,4 +1,4 @@
-use crate::{impls, VectorView};
+use crate::impls;
 use crate::{RandomVectorTrait, SequentialMutVectorTrait, SequentialVectorTrait, VectorTrait};
 
 #[derive(Default, Clone)]
@@ -78,30 +78,6 @@ impl<V: SequentialMutVectorTrait> SequentialVectorWrapper<V> {
     }
 }
 
-// impl<L: SequentialMutVectorTrait, R: SequentialVectorTrait> From<&SequentialVectorWrapper<R>> for SequentialVectorWrapper<L> {
-//     fn from(rhs: &SequentialVectorWrapper<R>) -> Self {
-//         Self::from_iter(rhs.dimension(), rhs.iter())
-//     }
-// }
-
-// impl<L: SequentialMutVectorTrait, R: RandomVectorTrait> From<&RandomVectorWrapper<R>> for SequentialVectorWrapper<L> {
-//     fn from(rhs: &RandomVectorWrapper<R>) -> Self {
-//         Self::from_iter(rhs.dimension(), rhs.iter())
-//     }
-// }
-
-// impl<L: SequentialMutVectorTrait, R: SequentialVectorTrait> Replace<&SequentialVectorWrapper<R>> for SequentialVectorWrapper<L> {
-//     fn replace(&mut self, rhs: &SequentialVectorWrapper<R>) {
-//         self.replace_by_iter(rhs.dimension(), rhs.iter());
-//     }
-// }
-
-// impl<L: SequentialMutVectorTrait, R: RandomVectorTrait> Replace<&RandomVectorWrapper<R>> for SequentialVectorWrapper<L> {
-//     fn replace(&mut self, rhs: &RandomVectorWrapper<R>) {
-//         self.replace_by_iter(rhs.dimension(), rhs.iter());
-//     }
-// }
-
 #[derive(Default, Clone)]
 pub struct RandomVectorWrapper<V: RandomVectorTrait> {
     pub(crate) object: V,
@@ -112,7 +88,9 @@ impl<V: RandomVectorTrait> RandomVectorWrapper<V> {
         &'a self,
         f: impl Fn(usize, f64) -> bool + Clone + 'a,
     ) -> SequentialVectorWrapper<impl SequentialVectorTrait + 'a> {
-        SequentialVectorWrapper{object: VectorView::new(self.object.dimension(), self.object.iter().filter(move |(j, x)| f(*j, *x)))}
+        SequentialVectorWrapper {
+            object: impls::VectorView::new(self.object.dimension(), self.object.iter().filter(move |(j, x)| f(*j, *x))),
+        }
     }
 }
 
@@ -144,88 +122,14 @@ impl<V: RandomVectorTrait + SequentialMutVectorTrait> RandomVectorWrapper<V> {
     }
 }
 
-// impl<L: RandomMutVectorTrait, R: VectorTrait> From<&VectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn from(rhs: &VectorWrapper<R>) -> Self {
-//         let mut lhs = L::default();
-//         rhs.assign_to_random_vector(&mut lhs);
-//         return Self {object: lhs};
-//     }
-// }
-
-// impl<L: RandomVectorTrait + SequentialMutVectorTrait, R: SequentialVectorTrait> From<&SequentialVectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn from(rhs: &SequentialVectorWrapper<R>) -> Self {
-//         Self::from_iter(rhs.dimension(), rhs.iter())
-//     }
-// }
-
-// impl<L: RandomVectorTrait + SequentialMutVectorTrait, R: RandomVectorTrait> From<&RandomVectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn from(rhs: &RandomVectorWrapper<R>) -> Self {
-//         Self::from_iter(rhs.dimension(), rhs.iter())
-//     }
-// }
-
-// impl<L: RandomMutVectorTrait, R: VectorTrait> Replace<VectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn replace(&mut self, rhs: VectorWrapper<R>) {
-//         rhs.assign_to_random_vector(&mut self.object);
-//     }
-// }
-
-// impl<L: RandomMutVectorTrait, R: VectorTrait> Replace<&VectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn replace(&mut self, rhs: &VectorWrapper<R>) {
-//         rhs.assign_to_random_vector(&mut self.object);
-//     }
-// }
-
-// impl<L: RandomVectorTrait + SequentialMutVectorTrait, R: SequentialVectorTrait> Replace<SequentialVectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn replace(&mut self, rhs: SequentialVectorWrapper<R>) {
-//         self.replace_by_iter(rhs.dimension(), rhs.iter());
-//     }
-// }
-
-// impl<L: RandomVectorTrait + SequentialMutVectorTrait, R: SequentialVectorTrait> Replace<&SequentialVectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn replace(&mut self, rhs: &SequentialVectorWrapper<R>) {
-//         self.replace_by_iter(rhs.dimension(), rhs.iter());
-//     }
-// }
-
-// impl<L: RandomVectorTrait + SequentialMutVectorTrait, R: RandomVectorTrait> Replace<RandomVectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn replace(&mut self, rhs: RandomVectorWrapper<R>) {
-//         self.replace_by_iter(rhs.dimension(), rhs.iter());
-//     }
-// }
-
-// impl<L: RandomVectorTrait + SequentialMutVectorTrait, R: RandomVectorTrait> Replace<&RandomVectorWrapper<R>> for RandomVectorWrapper<L> {
-//     fn replace(&mut self, rhs: &RandomVectorWrapper<R>) {
-//         self.replace_by_iter(rhs.dimension(), rhs.iter());
-//     }
-// }
-
 /// 次元と同サイズの配列と等価な密ベクトル
 pub type DenseVector = RandomVectorWrapper<impls::DenseVector>;
-
-// impl DenseVector {
-//     pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-//         Self { object: impls::DenseVector::new(dimension, nonzero_elements) }
-//     }
-// }
 
 /// 非ゼロ要素の位置を保持する疎ベクトル
 pub type SparseVector = RandomVectorWrapper<impls::SparseVector>;
 
-// impl SparseVector {
-//     pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-//         Self { object: impls::SparseVector::new(dimension, nonzero_elements) }
-//     }
-// }
-
 /// 非ゼロ要素と同サイズの配列と等価な疎ベクトル
 pub type CompressedVector = SequentialVectorWrapper<impls::CompressedVector>;
-
-// impl CompressedVector {
-//     pub fn new<I: Iterator<Item = (usize, f64)>>(dimension: usize, nonzero_elements: I) -> Self {
-//         Self { object: impls::CompressedVector::new(dimension, nonzero_elements) }
-//     }
-// }
 
 /// 単位ベクトル
 pub type UnitVector = RandomVectorWrapper<impls::UnitVector>;

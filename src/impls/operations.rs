@@ -35,6 +35,7 @@ pub fn mul_random_vector_and_random_vector(lhs: &impl RandomVectorTrait, rhs: &i
     }
 }
 
+// TODO: この関数は削除（代入方法はデータ構造ごとに細かく変えたい）
 #[inline(always)]
 pub fn assign_sequential_vector(lhs: &mut impl RandomMutVectorTrait, rhs: &impl SequentialVectorTrait) {
     lhs.replace_by_iter(rhs.dimension(), rhs.iter());
@@ -161,7 +162,7 @@ pub fn assign_bidirectional_matrix_multiplied_vector(
 ) {
     let [_, n] = rhs_matrix.dimension();
     debug_assert!(rhs_vector.dimension() == n);
-    if rhs_vector.iter().size_hint().1.is_some_and(|nz| nz <= n / 2) {
+    if rhs_vector.estimated_number_of_nonzeros() <= n / 2 {
         assign_column_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
     } else {
         assign_row_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
@@ -177,7 +178,7 @@ pub fn add_assign_bidirectional_matrix_multiplied_vector(
     let [m, n] = rhs_matrix.dimension();
     debug_assert!(lhs.dimension() == m);
     debug_assert!(rhs_vector.dimension() == n);
-    if rhs_vector.iter().size_hint().1.is_some_and(|nz| nz <= n / 2) {
+    if rhs_vector.estimated_number_of_nonzeros() <= n / 2 {
         add_assign_column_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
     } else {
         add_assign_row_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
@@ -193,7 +194,7 @@ pub fn sub_assign_bidirectional_matrix_multiplied_vector(
     let [m, n] = rhs_matrix.dimension();
     debug_assert!(lhs.dimension() == m);
     debug_assert!(rhs_vector.dimension() == n);
-    if rhs_vector.iter().size_hint().1.is_some_and(|nz| nz <= n / 2) {
+    if rhs_vector.estimated_number_of_nonzeros() <= n / 2 {
         sub_assign_column_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);
     } else {
         sub_assign_row_matrix_multiplied_vector(lhs, rhs_matrix, rhs_vector);

@@ -59,6 +59,8 @@ pub trait SequentialMutVectorTrait: SequentialVectorTrait + Default {
 
     fn replace_by_iter<I: Iterator<Item = (usize, f64)>>(&mut self, dimension: usize, nonzero_elements: I);
 
+    // TODO: replace_by_dense_iter ?
+
     // NOTE: 要素の重複をチェックするものとしないものとに分けたほうがいいかも
 }
 
